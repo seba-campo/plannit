@@ -1,38 +1,69 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Copy } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ArrowLeft, Copy, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { apiClient, getErrorMessage, type CreateRoomResponse } from "@/lib/api"
 
 export default function CreateRoom() {
-  const [roomName, setRoomName] = useState("")
   const [yourName, setYourName] = useState("")
-  const [roomCreated, setRoomCreated] = useState(false)
-  const [roomCode, setRoomCode] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [roomData, setRoomData] = useState<CreateRoomResponse | null>(null)
+  const [copySuccess, setCopySuccess] = useState(false)
   const router = useRouter()
 
-  const handleCreateRoom = (e: React.FormEvent) => {
+  const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault()
-    // In a real app, you would create a room on the server
-    // For now, we'll just generate a random room code
-    const generatedCode = Math.random().toString(36).substring(2, 8).toUpperCase()
-    setRoomCode(generatedCode)
-    setRoomCreated(true)
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const response = await apiClient.createRoom({
+        userData: {name: yourName.trim()}
+      })
+
+      setRoomData(response)
+
+      // Store room data in localStorage for the session
+      localStorage.setItem(
+        "currentRoom",
+        JSON.stringify({
+          roomDocId: response.data.roomDocId,
+          roomRtId: response.data.roomRtRef,
+          roomDocCode: response.data.roomDocCode,
+        }),
+      )
+    } catch (err) {
+      setError(getErrorMessage(err))
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(roomCode)
+  const handleCopyCode = async () => {
+    if (roomData?.data.roomDocId) {
+      try {
+        await navigator.clipboard.writeText(roomData.data.roomDocCode)
+        setCopySuccess(true)
+        setTimeout(() => setCopySuccess(false), 2000)
+      } catch (err) {
+        console.error("Failed to copy room code:", err)
+      }
+    }
   }
 
   const handleStartSession = () => {
-    router.push(`/room/${roomCode}`)
+    if (roomData?.data.roomDocId) {
+      router.push(`/room/${roomData.data.roomDocCode}`)
+    }
   }
 
   return (
@@ -50,23 +81,39 @@ export default function CreateRoom() {
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-accent/50 border-accent">
           <CardHeader>
-            <CardTitle>{roomCreated ? "Room Created!" : "Create a New Room"}</CardTitle>
+            <CardTitle>{roomData ? "Room Created!" : "Create a New Room"}</CardTitle>
             <CardDescription>
-              {roomCreated
+              {roomData
                 ? "Share this code with your team members to join"
                 : "Set up a new planning poker session for your team"}
             </CardDescription>
           </CardHeader>
 
           <CardContent>
-            {roomCreated ? (
+            {error && (
+              <Alert className="mb-4 border-red-500 bg-red-500/10">
+                <AlertDescription className="text-red-400">{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {roomData ? (
               <div className="space-y-4">
-                <div className="p-4 bg-background rounded-md flex justify-between items-center">
-                  <span className="font-mono text-xl tracking-wider text-primary">{roomCode}</span>
-                  <Button variant="ghost" size="icon" onClick={handleCopyCode}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Room Code</Label>
+                  <div className="p-4 bg-background rounded-md flex justify-between items-center">
+                    <span className="font-mono text-xl tracking-wider text-primary">{roomData.data.roomDocCode}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleCopyCode}
+                      className={copySuccess ? "text-green-400" : ""}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {copySuccess && <p className="text-sm text-green-400">Room code copied to clipboard!</p>}
                 </div>
+
                 <p className="text-sm text-muted-foreground text-center">
                   Share this code with your team members so they can join your planning session
                 </p>
@@ -74,23 +121,13 @@ export default function CreateRoom() {
             ) : (
               <form onSubmit={handleCreateRoom} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="room-name">Room Name</Label>
-                  <Input
-                    id="room-name"
-                    placeholder="Sprint Planning"
-                    value={roomName}
-                    onChange={(e) => setRoomName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="your-name">Your Name</Label>
                   <Input
                     id="your-name"
                     placeholder="Your name"
                     value={yourName}
                     onChange={(e) => setYourName(e.target.value)}
+                    disabled={isLoading}
                     required
                   />
                 </div>
@@ -99,13 +136,24 @@ export default function CreateRoom() {
           </CardContent>
 
           <CardFooter>
-            {roomCreated ? (
+            {roomData ? (
               <Button className="w-full" onClick={handleStartSession}>
                 Start Session
               </Button>
             ) : (
-              <Button className="w-full" onClick={handleCreateRoom}>
-                Create Room
+              <Button
+                className="w-full"
+                onClick={handleCreateRoom}
+                disabled={isLoading  || !yourName.trim()}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Room...
+                  </>
+                ) : (
+                  "Create Room"
+                )}
               </Button>
             )}
           </CardFooter>

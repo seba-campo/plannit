@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Eye, EyeOff, RotateCcw, Users } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Eye, EyeOff, RotateCcw, Users, Loader2 } from "lucide-react"
 import EstimationCard from "@/components/estimation-card"
 import PlayerList from "@/components/player-list"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { apiClient, getErrorMessage } from "@/lib/api"
 
 interface Player {
   id: number
@@ -15,17 +18,80 @@ interface Player {
   hasVoted: boolean
 }
 
+interface RoomSession {
+  roomId: string
+  roomCode: string
+  playerName: string
+  playerId?: string
+  isCreator: boolean
+}
+
 export default function PlanningPokerRoom({ params }: { params: { roomId: string } }) {
-  const [players, setPlayers] = useState<Player[]>([
-    { id: 1, name: "Alex", selection: null, hasVoted: false },
-    { id: 2, name: "Taylor", selection: null, hasVoted: false },
-    { id: 3, name: "Jordan", selection: null, hasVoted: false },
-    { id: 4, name: "Casey", selection: null, hasVoted: false },
-  ])
+  const [players, setPlayers] = useState<Player[]>([])
   const [revealed, setRevealed] = useState(false)
-  const [currentPlayer, setCurrentPlayer] = useState(1) // Default to first player
+  const [currentPlayer, setCurrentPlayer] = useState(1)
+  const [roomSession, setRoomSession] = useState<RoomSession | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [roomName, setRoomName] = useState("")
+  const router = useRouter()
 
   const cardValues = ["1", "2", "3", "5", "8", "13", "21", "?"]
+
+  useEffect(() => {
+    // Load room session from localStorage
+    const storedSession = localStorage.getItem("currentRoom")
+    if (storedSession) {
+      try {
+        const session: RoomSession = JSON.parse(storedSession)
+        if (session.roomCode === params.roomId) {
+          setRoomSession(session)
+          loadRoomData(session.roomCode)
+        } else {
+          // Room code doesn't match, redirect to join page
+          router.push("/join")
+        }
+      } catch (err) {
+        console.error("Failed to parse room session:", err)
+        router.push("/join")
+      }
+    } else {
+      // No session found, redirect to join page
+      router.push("/join")
+    }
+  }, [params.roomId, router])
+
+  const loadRoomData = async (roomCode: string) => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const response = await apiClient.getRoomDetails(roomCode)
+
+      // Convert API response to local player format
+      const apiPlayers = response.players.map((player, index) => ({
+        id: index + 1,
+        name: player.name,
+        selection: null,
+        hasVoted: false,
+      }))
+
+      setPlayers(apiPlayers)
+      setRoomName(response.roomName)
+
+      // Set current player based on session
+      if (roomSession?.playerName) {
+        const playerIndex = apiPlayers.findIndex((p) => p.name === roomSession.playerName)
+        if (playerIndex !== -1) {
+          setCurrentPlayer(playerIndex + 1)
+        }
+      }
+    } catch (err) {
+      setError(getErrorMessage(err))
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleCardSelect = (value: string) => {
     setPlayers(
@@ -48,14 +114,51 @@ export default function PlanningPokerRoom({ params }: { params: { roomId: string
 
   const allVoted = players.every((player) => player.hasVoted)
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading room...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-accent/50 border-accent">
+          <CardContent className="p-6">
+            <Alert className="border-red-500 bg-red-500/10">
+              <AlertDescription className="text-red-400">{error}</AlertDescription>
+            </Alert>
+            <div className="mt-4 space-y-2">
+              <Button className="w-full" onClick={() => loadRoomData(params.roomId)}>
+                Try Again
+              </Button>
+              <Button className="w-full" variant="outline" asChild>
+                <Link href="/">Back to Home</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-accent py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-primary">
-            PlannIt
+            Planning Poker
           </Link>
-          <div className="text-sm text-blue-400">Room: {params.roomId}</div>
+          <div className="text-center">
+            <div className="text-sm text-blue-400">Room: {params.roomId}</div>
+            {roomName && <div className="text-xs text-muted-foreground">{roomName}</div>}
+          </div>
+          <div className="text-sm text-muted-foreground">Playing as: {roomSession?.playerName}</div>
         </div>
       </header>
 
@@ -101,7 +204,7 @@ export default function PlanningPokerRoom({ params }: { params: { roomId: string
                   {players.map((player) => (
                     <div
                       key={player.id}
-                      className={`p-4 rounded-lg border ${
+                      className={`p-4 rounded-lg border cursor-pointer ${
                         currentPlayer === player.id ? "border-primary bg-primary/10" : "border-accent bg-background"
                       }`}
                       onClick={() => handlePlayerChange(player.id)}
