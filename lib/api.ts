@@ -15,21 +15,18 @@ export interface CreateRoomResponse {
 }
 
 export interface JoinRoomRequest {
-  roomCode: string
-  playerName: string
+  roomId: string
+  userName: {name: string}
 }
 
 export interface JoinRoomResponse {
-  roomId: string
-  roomCode: string
-  roomName: string
-  playerId: string
-  playerName: string
-  players: Array<{
-    id: string
-    name: string
-    isCreator: boolean
-  }>
+  roomCode: string,
+  rtdbKey: string,
+  userData:{
+    uniqueId: string,
+    name: string,
+    userType: string
+  }
 }
 
 export interface ApiError {

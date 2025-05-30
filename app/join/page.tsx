@@ -27,8 +27,8 @@ export default function JoinRoom() {
 
     try {
       const response = await apiClient.joinRoom({
-        roomCode: roomCode.trim().toUpperCase(),
-        playerName: yourName.trim(),
+        roomId: roomCode.trim().toUpperCase(),
+        userName: {name: yourName.trim()}
       })
 
       setRoomData(response)
@@ -37,11 +37,11 @@ export default function JoinRoom() {
       localStorage.setItem(
         "currentRoom",
         JSON.stringify({
-          roomId: response.roomId,
           roomCode: response.roomCode,
-          playerId: response.playerId,
-          playerName: yourName.trim(),
-          isCreator: false,
+          roomId: response.rtdbKey,
+          playerId: response.userData.uniqueId,
+          playerName: response.userData.name,
+          playerType: response.userData.userType
         }),
       )
 
@@ -79,7 +79,7 @@ export default function JoinRoom() {
           <CardHeader>
             <CardTitle>{roomData ? "Successfully Joined!" : "Join a Room"}</CardTitle>
             <CardDescription>
-              {roomData ? `Welcome to ${roomData.roomName}` : "Enter the room code shared by your team moderator"}
+              {roomData ? `Welcome to ${roomData.roomCode}` : "Enter the room code shared by your team moderator"}
             </CardDescription>
           </CardHeader>
 
@@ -96,21 +96,17 @@ export default function JoinRoom() {
                   <Label className="text-sm font-medium">Room Details</Label>
                   <div className="p-4 bg-background rounded-md space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Room Name:</span>
-                      <span className="font-medium">{roomData.roomName}</span>
-                    </div>
-                    <div className="flex justify-between">
                       <span className="text-muted-foreground">Room Code:</span>
                       <span className="font-mono text-primary">{roomData.roomCode}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Your Name:</span>
-                      <span className="font-medium">{roomData.playerName}</span>
+                      <span className="font-medium">{roomData.userData.name}</span>
                     </div>
                   </div>
                 </div>
 
-                {roomData.players && roomData.players.length > 0 && (
+                {/* {roomData.players && roomData.players.length > 0 && (
                   <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center">
                       <Users className="mr-2 h-4 w-4" />
@@ -129,7 +125,7 @@ export default function JoinRoom() {
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
 
                 <Alert className="border-green-500 bg-green-500/10">
                   <AlertDescription className="text-green-400">
@@ -147,7 +143,7 @@ export default function JoinRoom() {
                     value={roomCode}
                     onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                     className="font-mono uppercase"
-                    maxLength={6}
+                    maxLength={8}
                     disabled={isLoading}
                     required
                   />
