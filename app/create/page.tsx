@@ -61,7 +61,7 @@ export default function CreateRoom() {
   }
 
   const handleStartSession = () => {
-    if (roomData?.data.roomDocId) {
+    if (roomData?.data.roomDocCode) {
       router.push(`/room/${roomData.data.roomDocCode}`)
     }
   }
