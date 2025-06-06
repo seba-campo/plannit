@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app"
-import { getDatabase, ref, onValue, set, type Database } from "firebase/database"
+import { getDatabase, ref, onValue, set, get, type Database, update } from "firebase/database"
 import { getAuth, signInAnonymously } from "firebase/auth"
 
 // Firebase configuration - you should move these to environment variables
@@ -113,10 +113,11 @@ export class FirebaseRoomService {
 
   // Listen for real-time players updates
   subscribeToPlayers(roomId: string, callback: (players: Record<string, FirebasePlayer>) => void): () => void {
-    this.playersRef = ref(this.database, `planningRooms/$${roomId}/participants`)
+    this.playersRef = ref(this.database, `planningRooms/${roomId}/participants`)
 
     const unsubscribe = onValue(this.playersRef, (snapshot) => {
       const data = snapshot.val() || {}
+      // console.log(data)
       callback(data)
     })
 
@@ -126,21 +127,40 @@ export class FirebaseRoomService {
 
   // Update player's vote
   async updatePlayerVote(roomId: string, playerId: string, vote: string): Promise<void> {
-    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${playerId}`)
-    await set(playerRef, {
+    const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`);
+    const snapshot = await get(participantsRef);
+    if (!snapshot.exists()) return;
+
+    const participants = snapshot.val();
+    const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
+
+    if (index === -1) return;
+
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}/${playerId}`);
+    await update(playerRef, {
       vote,
       hasVoted: true,
       lastSeen: Date.now(),
-    })
+    });
   }
 
   // Update player's online status
   async updatePlayerStatus(roomId: string, playerId: string, isOnline: boolean): Promise<void> {
-    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${playerId}`)
-    await set(playerRef, {
+    const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`);
+    const snapshot = await get(participantsRef);
+
+    if (!snapshot.exists()) return;
+
+    const participants = snapshot.val();
+    const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
+
+    if (index === -1) return;
+
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}/${playerId}`);
+    await update(playerRef, {
       isOnline,
       lastSeen: Date.now(),
-    })
+    });
   }
 
   // Reveal all votes
@@ -156,7 +176,7 @@ export class FirebaseRoomService {
     const updates: Record<string, any> = {}
 
     // Get current players and reset their votes
-    const playersRef = ref(this.database, `planningRooms/${roomId}/players`)
+    const playersRef = ref(this.database, `planningRooms/${roomId}/participants`)
 
     return new Promise((resolve, reject) => {
       onValue(

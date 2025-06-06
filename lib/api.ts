@@ -8,9 +8,20 @@ export interface CreateRoomRequest {
 export interface CreateRoomResponse {
     msesage: string
     data:{
+      room:{
         roomDocId: string,
         roomRtRef: string,
-        roomDocCode: string
+        roomDocCode: string,
+      },
+      userData:{
+            "hasVoted": boolean,
+            "lastSeen": number,
+            "currentStatus": string,
+            "uniqueId": string,
+            "name": string,
+            "userType": string
+      }
+
     }
 }
 

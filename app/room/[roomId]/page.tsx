@@ -84,12 +84,16 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     }
 
     initializeRoom()
-
+    console.log(players)
     // Cleanup on unmount
     return () => {
       cleanup()
     }
   }, [roomId, router])
+
+    useEffect(() => {
+    console.log("Jugadores actualizados:", players)
+  }, [players])
 
   // Setup Firebase real-time listeners
   const setupRealtimeListeners = useCallback((roomId: string) => {
@@ -106,16 +110,23 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
 
     // Listen for players updates
     const playersUnsubscribe = firebaseRoomService.subscribeToPlayers(roomId, (playersData) => {
-      const playersList: Player[] = Object.entries(playersData).map(([id, player]) => ({
-        id,
-        name: player.name,
-        selection: player.vote !== null ? String(player.vote) : null,
-        hasVoted: player.hasVoted || false,
-        isOnline: player.isOnline || false,
-        userType: player.userType,
-      }))
+      const data = playersData;
+      const playersList: any = Object.entries(data).map(([id, player]) => {
+        console.log('Transformando jugador:', id, player)
 
+        if (!player) return null  // opcional: protegerte contra errores
+
+        return {
+          id,
+          name: player.name,
+          selection: player.vote !== null ? String(player.vote) : null,
+          hasVoted: player.hasVoted || false,
+          isOnline: player.isOnline || false,
+          userType: player.userType,
+        }
+      }).filter(Boolean) 
       setPlayers(playersList)
+      console.log('Seteando players:', playersList)
     })
 
     unsubscribeRef.current = [roomUnsubscribe, playersUnsubscribe]
@@ -125,7 +136,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   const cleanup = useCallback(() => {
     if (roomSession) {
       // Update player status to offline before leaving
-      firebaseRoomService.updatePlayerStatus(roomsession.roomRtId, roomSession.playerId, false).catch(console.error)
+      firebaseRoomService.updatePlayerStatus(roomSession.roomRtId, roomSession.playerId, false).catch(console.error)
     }
 
     // Unsubscribe from all listeners
@@ -151,6 +162,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     if (!roomSession || revealed) return
 
     try {
+      console.log(roomSession.playerId)
       await firebaseRoomService.updatePlayerVote(roomSession.roomRtId, roomSession.playerId, value)
     } catch (err) {
       console.error("Failed to update vote:", err)
@@ -375,17 +387,21 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           </div>
 
           <div>
-            <PlayerList
-              players={players.map((p, index) => ({
-                id: index + 1,
-                name: p.name,
-                selection: p.selection,
-                hasVoted: p.hasVoted,
-              }))}
-              currentPlayer={1}
-              onPlayerChange={() => {}} // Disabled since we're using real players
-              revealed={revealed}
-            />
+            { <PlayerList
+                players={players.map((p, index) => {
+                  // const player = Object.values(p); 
+                  console.log(p, index)// Agarrás el objeto interior
+                  return {
+                    id: index + 1,
+                    name: p.name,
+                    selection: p.selection,
+                    hasVoted: p.hasVoted,
+                  };
+                })}
+                currentPlayer={1}
+                onPlayerChange={() => {}}
+                revealed={revealed}
+            />}
           </div>
         </div>
       </main>

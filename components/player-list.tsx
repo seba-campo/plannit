@@ -20,6 +20,7 @@ interface PlayerListProps {
 
 export default function PlayerList({ players, currentPlayer, onPlayerChange, revealed }: PlayerListProps) {
   // Calculate average if revealed (excluding "?" votes)
+  // console.log("players: ",players)
   const calculateAverage = () => {
     if (!players || players.length === 0) return "-"
 
@@ -27,7 +28,7 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
       .filter((p) => p.selection && p.selection !== "?")
       .map((p) => Number.parseInt(p.selection as string))
 
-    if (numericVotes.length === 0) return "-"
+    if (numericVotes.length === 0) return "-";
 
     const sum = numericVotes.reduce((acc, val) => acc + val, 0)
     return (sum / numericVotes.length).toFixed(1)

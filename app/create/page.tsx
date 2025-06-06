@@ -36,9 +36,12 @@ export default function CreateRoom() {
       localStorage.setItem(
         "currentRoom",
         JSON.stringify({
-          roomDocId: response.data.roomDocId,
-          roomRtId: response.data.roomRtRef,
-          roomDocCode: response.data.roomDocCode,
+          roomDocId: response.data.room.roomDocId,
+          roomRtId: response.data.room.roomRtRef,
+          roomDocCode: response.data.room.roomDocCode,
+          playerId: response.data.userData.uniqueId,
+          playerName: response.data.userData.name,
+          playerType: response.data.userData.userType
         }),
       )
     } catch (err) {
@@ -49,9 +52,9 @@ export default function CreateRoom() {
   }
 
   const handleCopyCode = async () => {
-    if (roomData?.data.roomDocId) {
+    if (roomData?.data.room.roomDocId) {
       try {
-        await navigator.clipboard.writeText(roomData.data.roomDocCode)
+        await navigator.clipboard.writeText(roomData.data.room.roomDocCode)
         setCopySuccess(true)
         setTimeout(() => setCopySuccess(false), 2000)
       } catch (err) {
@@ -61,8 +64,8 @@ export default function CreateRoom() {
   }
 
   const handleStartSession = () => {
-    if (roomData?.data.roomDocCode) {
-      router.push(`/room/${roomData.data.roomDocCode}`)
+    if (roomData?.data.room.roomDocCode) {
+      router.push(`/room/${roomData.data.room.roomDocCode}`)
     }
   }
 
@@ -101,7 +104,7 @@ export default function CreateRoom() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Room Code</Label>
                   <div className="p-4 bg-background rounded-md flex justify-between items-center">
-                    <span className="font-mono text-xl tracking-wider text-primary">{roomData.data.roomDocCode}</span>
+                    <span className="font-mono text-xl tracking-wider text-primary">{roomData.data.room.roomDocCode}</span>
                     <Button
                       variant="ghost"
                       size="icon"
