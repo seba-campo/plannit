@@ -30,6 +30,7 @@ signInAnonymously(auth)
 
 // Types for Firebase data structure
 export interface FirebasePlayer {
+  currentStatus: "spectator" | "player"
   name: string,
   uniqueId: string,
   userType: "admin" | "player"
@@ -55,7 +56,7 @@ export interface RoomSession {
   roomCode: string //Codigo de pocos digitos
   playerId: string
   playerName: string
-  playerType: "player" | "creator"
+  playerType: "player" | "admin"
 }
 
 // Firebase service class
@@ -135,7 +136,7 @@ export class FirebaseRoomService {
 
     if (index === -1) return;
 
-    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}/${playerId}`);
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`);
     await update(playerRef, {
       vote,
       hasVoted: true,
@@ -151,11 +152,12 @@ export class FirebaseRoomService {
     if (!snapshot.exists()) return;
 
     const participants = snapshot.val();
+    console.log(participants)
     const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
 
     if (index === -1) return;
 
-    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}/${playerId}`);
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`);
     await update(playerRef, {
       isOnline,
       lastSeen: Date.now(),
@@ -167,7 +169,7 @@ export class FirebaseRoomService {
     const gameStateRef = ref(this.database, `planningRooms/${roomId}/gameState`)
     const isRevealedRef = ref(this.database, `planningRooms/${roomId}/isRevealed`)
 
-    await Promise.all([set(gameStateRef, "revealed"), set(isRevealedRef, true)])
+    await Promise.all([update(gameStateRef, {"gameState": "revealed"}), update(isRevealedRef, {"isRevealed": true})])
   }
 
   // Reset votes for new round
@@ -182,11 +184,12 @@ export class FirebaseRoomService {
         playersRef,
         async (snapshot) => {
           const players = snapshot.val() || {}
+          // console.log(players)
 
           // Reset each player's vote
-          Object.keys(players).forEach((playerId) => {
-            updates[`planningRooms/${roomId}/participants/${playerId}/vote`] = null
-            updates[`planningRooms/${roomId}/participants/${playerId}/hasVoted`] = false
+          Object.keys(players).forEach((player, i) => {
+            updates[`planningRooms/${roomId}/participants/${player}/vote`] = 0
+            updates[`planningRooms/${roomId}/participants/${player}/hasVoted`] = false
           })
 
           // Reset game state
@@ -194,8 +197,9 @@ export class FirebaseRoomService {
           updates[`planningRooms/${roomId}/isRevealed`] = false
           updates[`planningRooms/${roomId}/currentRound`] = (players.currentRound || 0) + 1
 
+          console.log("updates to be done", updates)
           try {
-            await set(ref(this.database), updates)
+            await update(ref(this.database), updates)
             resolve()
           } catch (error) {
             reject(error)

@@ -16,10 +16,10 @@ import { firebaseRoomService, type FirebaseRoom, type RoomSession } from "@/lib/
 interface Player {
   id: string
   name: string
-  selection: string | null
   hasVoted: boolean
   isOnline: boolean
   userType: "admin" | "player"
+  vote: string | null
 }
 export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params)
@@ -92,7 +92,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   }, [roomId, router])
 
     useEffect(() => {
-    console.log("Jugadores actualizados:", players)
+    // console.log("Jugadores actualizados:", players)
   }, [players])
 
   // Setup Firebase real-time listeners
@@ -112,19 +112,22 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     const playersUnsubscribe = firebaseRoomService.subscribeToPlayers(roomId, (playersData) => {
       const data = playersData;
       const playersList: any = Object.entries(data).map(([id, player]) => {
-        console.log('Transformando jugador:', id, player)
-
         if (!player) return null  // opcional: protegerte contra errores
 
         return {
           id,
-          name: player.name,
-          selection: player.vote !== null ? String(player.vote) : null,
+          currentStatus: player.currentStatus,
+          vote: player.vote !== null ? String(player.vote) : null,
           hasVoted: player.hasVoted || false,
           isOnline: player.isOnline || false,
+          lastSeen: player.lastSeen || null,
+          name: player.name,
+          uniqueId: player.uniqueId,
           userType: player.userType,
+
         }
       }).filter(Boolean) 
+      console.log("Se va a renderizar lo siguiente: ", playersList )
       setPlayers(playersList)
       console.log('Seteando players:', playersList)
     })
@@ -196,14 +199,14 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
 
   // Check if current user is the room creator
   const isCreator = () => {
-    return roomSession?.playerType === "creator"
+    return roomSession?.playerType === "admin"
   }
 
   // Get current player's vote
   const getCurrentPlayerVote = () => {
     if (!roomSession) return null
     const currentPlayer = players.find((p) => p.id === roomSession.playerId)
-    return currentPlayer?.selection || null
+    return currentPlayer?.vote || null
   }
 
   // Check if all players have voted
@@ -212,8 +215,8 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   // Calculate average of numeric votes
   const calculateAverage = () => {
     const numericVotes = players
-      .filter((p) => p.selection && p.selection !== "?" && p.isOnline)
-      .map((p) => Number.parseInt(p.selection as string))
+      .filter((p) => p.vote && p.vote !== "?" && p.isOnline)
+      .map((p) => Number.parseInt(p.vote as string))
       .filter((vote) => !isNaN(vote))
 
     if (numericVotes.length === 0) return "-"
@@ -321,7 +324,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
                       value={value}
                       onClick={() => handleCardSelect(value)}
                       disabled={revealed}
-                      isSelected={getCurrentPlayerVote() === value}
+                      isSelected={getCurrentPlayerVote()}
                     />
                   ))}
                 </div>
@@ -372,7 +375,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
 
                       <div className="flex justify-center">
                         {revealed ? (
-                          <div className="text-2xl font-bold text-primary">{player.selection || "-"}</div>
+                          <div className="text-2xl font-bold text-primary">{player.vote || "-"}</div>
                         ) : (
                           <div
                             className={`w-8 h-8 rounded-full ${player.hasVoted ? "bg-blue-500" : "bg-gray-700"}`}
@@ -389,12 +392,10 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           <div>
             { <PlayerList
                 players={players.map((p, index) => {
-                  // const player = Object.values(p); 
-                  console.log(p, index)// Agarrás el objeto interior
                   return {
                     id: index + 1,
                     name: p.name,
-                    selection: p.selection,
+                    selection: p.vote,
                     hasVoted: p.hasVoted,
                   };
                 })}
