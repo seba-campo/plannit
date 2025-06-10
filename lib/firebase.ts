@@ -30,10 +30,10 @@ signInAnonymously(auth)
 
 // Types for Firebase data structure
 export interface FirebasePlayer {
-  currentStatus: "spectator" | "player"
+  // currentStatus: "spectator" | "player"
   name: string,
   uniqueId: string,
-  userType: "admin" | "player"
+  userType: "admin" | "player" | "spectator"
   vote: number | null
   hasVoted: boolean
   lastSeen: number
@@ -225,7 +225,18 @@ export class FirebaseRoomService {
     this.unsubscribers.forEach((unsubscribe) => unsubscribe())
     this.unsubscribers = []
   }
+    // Update player's user type (spectator/player)
+  async updatePlayerType(roomId: string, playerId: string, userType: "spectator" | "player"): Promise<void> {
+    const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`)
+    const snapshot = await get(participantsRef);
+    const participants = snapshot.val();
+    const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`)
+    await update(playerRef, {"userType": userType})
+  }
 }
+
+
 
 // Create singleton instance
 export const firebaseRoomService = new FirebaseRoomService()

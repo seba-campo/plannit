@@ -5,16 +5,19 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
 interface Player {
-  id: number
+  id: string
   name: string
-  selection: string | null
   hasVoted: boolean
+  isOnline: boolean
+  userType: "admin" | "player" | "spectator"
+  uniqueId: string;
+  vote: string | null
 }
 
 interface PlayerListProps {
   players: Player[]
-  currentPlayer: number
-  onPlayerChange: (id: number) => void
+  currentPlayer: string
+  onPlayerChange: (id: string) => void
   revealed: boolean
 }
 
@@ -25,8 +28,8 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
     if (!players || players.length === 0) return "-"
 
     const numericVotes = players
-      .filter((p) => p.selection && p.selection !== "?")  
-      .map((p) => Number.parseInt(p.selection as string))
+      .filter((p) => p.vote && p.vote !== "?")  
+      .map((p) => Number.parseInt(p.vote as string))
 
     if (numericVotes.length === 0) return "-";
 
@@ -58,7 +61,7 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
             <div
               key={player.id}
               className={`flex items-center justify-between p-3 rounded-lg cursor-pointer ${
-                currentPlayer === player.id ? "bg-primary/10" : "hover:bg-accent/80"
+                currentPlayer === player.uniqueId ? "bg-primary/10" : "hover:bg-accent/80"
               }`}
               onClick={() => onPlayerChange(player.id)}
             >
@@ -73,7 +76,7 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
               </div>
               <div>
                 {revealed ? (
-                  <Badge variant={player.selection ? "default" : "outline"}>{player.selection || "No vote"}</Badge>
+                  <Badge variant={player.vote ? "default" : "outline"}>{player.vote || "No vote"}</Badge>
                 ) : (
                   <Badge variant={player.hasVoted ? "default" : "outline"}>
                     {player.hasVoted ? "Voted" : "Waiting"}
