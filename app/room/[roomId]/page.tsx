@@ -52,7 +52,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
         const session: RoomSession = JSON.parse(storedSession)
 
         // Validate that the room code matches the URL
-        if (session.roomDocCode != roomId) {
+        if (session.roomCode != roomId) {
           router.push("/join")
           return
         }
@@ -60,7 +60,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
         setRoomSession(session)
 
         // Initialize Firebase connection
-        const roomData = await firebaseRoomService.initializeRoom(session.roomRtId)
+        const roomData = await firebaseRoomService.initializeRoom(session.roomId)
 
         if (!roomData) {
           setError("Room not found or has been deleted")
@@ -72,10 +72,10 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
         setIsConnected(true)
 
         // Update player's online status
-        await firebaseRoomService.updatePlayerStatus(session.roomRtId, session.playerId, true)
+        await firebaseRoomService.updatePlayerStatus(session.roomId, session.playerId, true)
 
         // Subscribe to real-time updates
-        setupRealtimeListeners(session.roomRtId)
+        setupRealtimeListeners(session.roomId)
       } catch (err) {
         console.error("Failed to initialize room:", err)
         setError("Failed to connect to room")
@@ -136,7 +136,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   const cleanup = useCallback(() => {
     if (roomSession) {
       // Update player status to offline before leaving
-      firebaseRoomService.updatePlayerStatus(roomSession.roomRtId, roomSession.playerId, false).catch(console.error)
+      firebaseRoomService.updatePlayerStatus(roomSession.roomId, roomSession.playerId, false).catch(console.error)
     }
 
     // Unsubscribe from all listeners
@@ -149,7 +149,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     const handleVisibilityChange = () => {
       if (roomSession) {
         const isVisible = !document.hidden
-        firebaseRoomService.updatePlayerStatus(roomSession.roomRtId, roomSession.playerId, isVisible).catch(console.error)
+        firebaseRoomService.updatePlayerStatus(roomSession.roomId, roomSession.playerId, isVisible).catch(console.error)
       }
     }
 
@@ -163,7 +163,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
 
     try {
       console.log(roomSession.playerId)
-      await firebaseRoomService.updatePlayerVote(roomSession.roomRtId, roomSession.playerId, value)
+      await firebaseRoomService.updatePlayerVote(roomSession.roomId, roomSession.playerId, value)
     } catch (err) {
       console.error("Failed to update vote:", err)
       setError("Failed to submit vote")
@@ -175,7 +175,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     if (!roomSession || !isCreator() || revealed) return
 
     try {
-      await firebaseRoomService.revealVotes(roomSession.roomRtId)
+      await firebaseRoomService.revealVotes(roomSession.roomId)
     } catch (err) {
       console.error("Failed to reveal votes:", err)
       setError("Failed to reveal votes")
@@ -187,7 +187,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     if (!roomSession || !isCreator()) return
 
     try {
-      await firebaseRoomService.resetVotes(roomSession.roomRtId)
+      await firebaseRoomService.resetVotes(roomSession.roomId)
     } catch (err) {
       console.error("Failed to reset votes:", err)
       setError("Failed to reset votes")

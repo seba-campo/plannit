@@ -36,9 +36,8 @@ export default function CreateRoom() {
       localStorage.setItem(
         "currentRoom",
         JSON.stringify({
-          roomDocId: response.data.room.roomDocId,
-          roomRtId: response.data.room.roomRtRef,
-          roomDocCode: response.data.room.roomDocCode,
+          roomCode: response.data.room.roomDocCode,
+          roomId: response.data.room.roomRtRef,
           playerId: response.data.userData.uniqueId,
           playerName: response.data.userData.name,
           playerType: response.data.userData.userType

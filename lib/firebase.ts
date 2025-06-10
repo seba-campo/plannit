@@ -51,12 +51,11 @@ export interface FirebaseRoom {
 }
 
 export interface RoomSession {
-  roomDocId: string
-  roomDocCode: string
-  roomRtId: string // This is the rtdbKey
+  roomId: string
+  roomCode: string //Codigo de pocos digitos
   playerId: string
   playerName: string
-  playerType: "creator" | "participant"
+  playerType: "player" | "creator"
 }
 
 // Firebase service class

@@ -25,7 +25,7 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
     if (!players || players.length === 0) return "-"
 
     const numericVotes = players
-      .filter((p) => p.selection && p.selection !== "?")
+      .filter((p) => p.selection && p.selection !== "?")  
       .map((p) => Number.parseInt(p.selection as string))
 
     if (numericVotes.length === 0) return "-";
