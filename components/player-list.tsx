@@ -23,15 +23,27 @@ interface PlayerListProps {
 
 export default function PlayerList({ players, currentPlayer, onPlayerChange, revealed }: PlayerListProps) {
   // Calculate average if revealed (excluding "?" votes)
-  // console.log("players: ",players)
+  // const calculateAverage = () => {
+  //   if (!players || players.length === 0) return "-"
+
+  //   const numericVotes = players
+  //     .filter((p) => p.selection && p.selection !== "?")
+  //     .map((p) => Number.parseInt(p.selection as string))
+
+  //   if (numericVotes.length === 0) return "-"
+
+  //   const sum = numericVotes.reduce((acc, val) => acc + val, 0)
+  //   return (sum / numericVotes.length).toFixed(1)
+  // }
+
   const calculateAverage = () => {
-    if (!players || players.length === 0) return "-"
-
     const numericVotes = players
-      .filter((p) => p.vote && p.vote !== "?")  
+      .filter((p) => p.vote && p.vote !== "?" && p.userType != "spectator")
       .map((p) => Number.parseInt(p.vote as string))
+      .filter((vote) => !isNaN(vote))
 
-    if (numericVotes.length === 0) return "-";
+    if (numericVotes.length === 0) return "-"
+    console.log(numericVotes)
 
     const sum = numericVotes.reduce((acc, val) => acc + val, 0)
     return (sum / numericVotes.length).toFixed(1)
@@ -75,13 +87,17 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
                 </div>
               </div>
               <div>
-                {revealed ? (
-                  <Badge variant={player.vote ? "default" : "outline"}>{player.vote || "No vote"}</Badge>
-                ) : (
-                  <Badge variant={player.hasVoted ? "default" : "outline"}>
-                    {player.hasVoted ? "Voted" : "Waiting"}
-                  </Badge>
-                )}
+                  {player.userType === "spectator" ? (
+                    <Badge variant="outline">Spectating</Badge>
+                  ) : revealed && (player.userType === "admin" || player.userType === "player") ? (
+                    <Badge variant={player.vote ? "default" : "outline"}>
+                      {player.vote || "No vote"}
+                    </Badge>
+                  ) : (
+                    <Badge variant={player.hasVoted ? "default" : "outline"}>
+                      {player.hasVoted ? "Voted" : "Waiting"}
+                    </Badge>
+                  )}
               </div>
             </div>
           ))}

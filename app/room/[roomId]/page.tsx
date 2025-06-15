@@ -26,7 +26,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   const { roomId } = use(params)
   const [players, setPlayers] = useState<Player[]>([])
   const [revealed, setRevealed] = useState(false)
-  const [roomSession, setRoomSession] = useState<RoomSession | null>(null)
+  const [roomSession, setRoomSession] = useState<RoomSession>()
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [roomData, setRoomData] = useState<FirebaseRoom | null>(null)
@@ -35,7 +35,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   const [currentRound, setCurrentRound] = useState(1)
   const [currentUserType, setCurrentUserType] = useState<"admin" | "player" | "spectator">("player")
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false)
-  const [currentPlayer, setCurrentPlayer] = useState<Player>(null)
+  const [currentPlayer, setCurrentPlayer] = useState<Player>()
 
   const router = useRouter()
   const unsubscribeRef = useRef<(() => void)[]>([])
@@ -135,7 +135,8 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
       // Update current user type if it changed
       if (roomSession) {
         const currentPlayer = playersList.find((p: Player) => p.uniqueId === roomSession.playerId);
-        setCurrentPlayer(currentPlayer);
+        // setCurrentPlayer(currentPlayer);
+        // console.log("current player", currentPlayer);
         if (currentPlayer && currentPlayer.userType !== currentUserType) {
           setCurrentUserType(currentPlayer.userType)
           console.log(currentUserType, currentPlayer)
@@ -143,14 +144,14 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           // Update localStorage with new user type
           const updatedSession = {
             ...roomSession,
-            playerType: currentPlayer.userType,
+            playerType: currentPlayer.userType
           }
           localStorage.setItem("currentRoom", JSON.stringify(updatedSession))
           setRoomSession(updatedSession)
         }
       }
 
-      console.log('Seteando players:', playersList)
+      // console.log('Seteando players:', playersList)
     })
 
     unsubscribeRef.current = [roomUnsubscribe, playersUnsubscribe]
@@ -169,20 +170,19 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   }, [roomSession])
 
   const handleUserTypeToggle = async () => {
-    console.log("HOLA")
     if (!roomSession || isUpdatingUserType || currentUserType === "admin") return
 
     setIsUpdatingUserType(true)
 
     try {
       const newUserType = currentUserType === "spectator" ? "player" : "spectator"
-      console.log(roomSession.roomId, roomSession.playerId, newUserType)
+      setCurrentUserType(newUserType);
+      console.log(newUserType)
       await firebaseRoomService.updatePlayerType(roomSession.roomId, roomSession.playerId, newUserType)
 
       // The userType will be updated via the real-time listener
       // No need to update state manually here
     } catch (err) {
-      console.error("Failed to update user type:", err)
       setError("Failed to update user type")
     } finally {
       setIsUpdatingUserType(false)
@@ -222,7 +222,6 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     try {
       await firebaseRoomService.revealVotes(roomSession.roomId)
     } catch (err) {
-      console.error("Failed to reveal votes:", err)
       setError("Failed to reveal votes")
     }
   }
@@ -234,7 +233,6 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     try {
       await firebaseRoomService.resetVotes(roomSession.roomId)
     } catch (err) {
-      console.error("Failed to reset votes:", err)
       setError("Failed to reset votes")
     }
   }
@@ -467,7 +465,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
                           )}
                           {player.userType === "spectator" && (
                             <Badge variant="outline" className="text-xs">
-                              Spectator
+                              
                             </Badge>
                           )}
                           {!player.isOnline && (
@@ -496,19 +494,22 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           </div>
 
           <div>
-            { <PlayerList
-                players={players.map((p, index) => {
-                  return {
+            { roomSession && (
+                <PlayerList
+                  players={players.map((p, index) => ({
                     id: p.uniqueId,
                     name: p.name,
-                    selection: p.vote,
+                    vote: p.vote,
                     hasVoted: p.hasVoted,
-                  };
-                })}
-                currentPlayer={currentPlayer.uniqueId}
-                onPlayerChange={() => {}}
-                revealed={revealed}
-            />}
+                    isOnline: p.isOnline ?? false,
+                    userType: p.userType,
+                    uniqueId: p.uniqueId
+                  }))}
+                  currentPlayer={roomSession.playerId}
+                  onPlayerChange={() => {}}
+                  revealed={revealed}
+                />)
+              }
           </div>
         </div>
       </main>

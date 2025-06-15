@@ -8,9 +8,9 @@ interface Player {
   id: string
   name: string
   hasVoted: boolean
-  isOnline: boolean
+  isOnline?: boolean
   userType: "admin" | "player" | "spectator"
-  uniqueId: string;
+  uniqueId?: string;
   vote: string | null
 }
 
@@ -87,10 +87,15 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
                 </div>
               </div>
               <div>
-                {revealed ? (
+                {revealed && player.userType == "spectator" ? (
+                  <Badge variant="default">{"No vote"}</Badge>
+                ) : (
+                  <Badge variant={player.vote ? "default" : "outline"}>{player.vote || "No vote"}</Badge>
+                )}
+                {revealed && player.userType != "spectator" ? (
                   <Badge variant={player.vote ? "default" : "outline"}>{player.vote || "No vote"}</Badge>
                 ) : (
-                  <Badge variant={player.hasVoted ? "default" : "outline"}>
+                  <Badge variant={player.hasVoted? "default" : "outline"}>
                     {player.hasVoted ? "Voted" : "Waiting"}
                   </Badge>
                 )}
@@ -102,7 +107,7 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
         {revealed && (
           <div className="mt-6 pt-6 border-t border-accent">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Average:</span>
+              <span className="text-sm font-medium">Averagesssss:</span>
               <span className="text-xl font-bold text-primary">{calculateAverage()}</span>
             </div>
           </div>
