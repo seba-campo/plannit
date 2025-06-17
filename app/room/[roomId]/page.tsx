@@ -279,6 +279,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
 
     const sum = numericVotes.reduce((acc, val) => acc + val, 0)
     return (sum / numericVotes.length).toFixed(1)
+    //comment
   }
 
   if (isLoading) {
