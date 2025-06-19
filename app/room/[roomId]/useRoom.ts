@@ -25,7 +25,6 @@ export const useRoom = (roomId: string, router: any) => {
   const [currentRound, setCurrentRound] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [isConnected, setIsConnected] = useState(false)
-  // const [isUpdatingUserType, setIsUpdatingUserType] = useState(false)
   const [currentPlayer, setCurrentPlayer] = useState<Player>()
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false)
 
@@ -51,7 +50,6 @@ export const useRoom = (roomId: string, router: any) => {
     
             return {
               id,
-              // currentStatus: player.currentStatus,
               vote: player.vote !== null ? String(player.vote) : null,
               hasVoted: player.hasVoted || false,
               isOnline: player.isOnline || false,
@@ -66,8 +64,6 @@ export const useRoom = (roomId: string, router: any) => {
           // Update current user type if it changed
           if (roomSession) {
             const currentPlayer = playersList.find((p: Player) => p.uniqueId === roomSession.playerId);
-            // setCurrentPlayer(currentPlayer);
-            // console.log("current player", currentPlayer);
             if (currentPlayer && currentPlayer.userType !== currentUserType) {
               setCurrentUserType(currentPlayer.userType)
               console.log(currentUserType, currentPlayer)
@@ -220,7 +216,7 @@ export const useRoom = (roomId: string, router: any) => {
 
   const calculateAverage = () => {
     const numericVotes = players
-      .filter((p) => p.vote && p.vote !== "?" && p.isOnline && p.userType !== "spectator")
+      .filter((p) => p.vote && p.vote !== "?" && p.vote !== '0' && p.isOnline && p.userType !== "spectator")
       .map((p) => Number.parseInt(p.vote as string))
       .filter((vote) => !isNaN(vote))
 

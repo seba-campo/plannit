@@ -169,7 +169,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
 
                   {isCreator() && (
                     <div className="flex gap-2">
-                      <Button variant="outline" onClick={handleReveal} disabled={revealed || !allVoted}>
+                      <Button variant="outline" onClick={handleReveal} disabled={revealed}>
                         {revealed ? <Eye className="mr-2 h-4 w-4" /> : <EyeOff className="mr-2 h-4 w-4" />}
                         {revealed ? "Revealed" : "Reveal Cards"}
                       </Button>
