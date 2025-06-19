@@ -70,7 +70,7 @@ export default function JoinRoom() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to home
           </Link>
-          <h1 className="text-2xl font-bold mx-auto text-primary">Planning Poker</h1>
+          <h1 className="text-2xl font-bold mx-auto text-primary">PlanIt</h1>
         </div>
       </header>
 
