@@ -22,29 +22,13 @@ interface PlayerListProps {
 }
 
 export default function PlayerList({ players, currentPlayer, onPlayerChange, revealed }: PlayerListProps) {
-  // Calculate average if revealed (excluding "?" votes)
-  // const calculateAverage = () => {
-  //   if (!players || players.length === 0) return "-"
-
-  //   const numericVotes = players
-  //     .filter((p) => p.selection && p.selection !== "?")
-  //     .map((p) => Number.parseInt(p.selection as string))
-
-  //   if (numericVotes.length === 0) return "-"
-
-  //   const sum = numericVotes.reduce((acc, val) => acc + val, 0)
-  //   return (sum / numericVotes.length).toFixed(1)
-  // }
-
   const calculateAverage = () => {
     const numericVotes = players
-      .filter((p) => p.vote && p.vote !== "?" && p.userType != "spectator")
+      .filter((p) => p.vote && p.vote !== "?" && p.vote !== '0' && p.isOnline && p.userType !== "spectator")
       .map((p) => Number.parseInt(p.vote as string))
       .filter((vote) => !isNaN(vote))
 
     if (numericVotes.length === 0) return "-"
-    console.log(numericVotes)
-
     const sum = numericVotes.reduce((acc, val) => acc + val, 0)
     return (sum / numericVotes.length).toFixed(1)
   }

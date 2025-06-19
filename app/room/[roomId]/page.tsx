@@ -28,7 +28,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   const { roomId } = use(params)
   const router = useRouter()
 
-  const cardValues = ["1", "2", "3", "5", "8", "13", "21", "?"];
+  const cardValues = ["1", "2", "3", "5", "8", "13", "21", "🍆"];
   const {
     players,
     revealed,
@@ -270,7 +270,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           <div>
             { roomSession && (
                 <PlayerList
-                  players={players.map((p, index) => ({
+                  players={players.map((p) => ({
                     id: p.uniqueId,
                     name: p.name,
                     vote: p.vote,
