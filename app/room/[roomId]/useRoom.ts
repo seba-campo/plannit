@@ -1,5 +1,9 @@
+"use client"
+
 // hooks/useRoom.ts
 import { useState, useEffect, useCallback, useRef } from "react"
+import { useRoomExitGuard } from "./useExitRoom"
+import { usePathname } from "next/navigation"
 // importar servicios y tipos necesarios
 import { firebaseRoomService, type FirebaseRoom, type RoomSession } from "@/lib/firebase"
 
@@ -27,8 +31,9 @@ export const useRoom = (roomId: string, router: any) => {
   const [isConnected, setIsConnected] = useState(false)
   const [currentPlayer, setCurrentPlayer] = useState<Player>()
   const [isUpdatingUserType, setIsUpdatingUserType] = useState(false)
+  const pathname = usePathname()
 
-
+  useRoomExitGuard(roomSession)
 
   const setupRealtimeListeners = useCallback((roomId: string) => {
      // Listen for room updates
@@ -88,6 +93,8 @@ export const useRoom = (roomId: string, router: any) => {
     try {
         const storedSession = localStorage.getItem("currentRoom")
         if (!storedSession) {
+          const storageSession = {roomCode: roomId}
+            localStorage.setItem("cachedRoomCode", JSON.stringify(storageSession))
             router.push("/join")
             return
         }
@@ -143,6 +150,23 @@ export const useRoom = (roomId: string, router: any) => {
     }
   }, [initializeRoom])
 
+  useEffect(() => {
+    if(!roomSession) return;
+    console.log("ENTRO AL effect ")
+
+    const handleBeforeUnload = () => {
+      firebaseRoomService.removePlayer(roomId, roomSession.playerId)
+      console.log("Eliminado el user")
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      // Se ejecuta al desmontar el componente o al cambiar de ruta
+      firebaseRoomService.removePlayer(roomId, roomSession.playerId)
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [roomId, router, pathname] )
   
   //maneja visibilidades
   useEffect(() => {

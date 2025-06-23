@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -12,17 +11,6 @@ import Link from "next/link"
 import { use } from 'react'
 import { useRouter } from "next/navigation"
 import { useRoom } from "./useRoom"
-import { firebaseRoomService, type FirebaseRoom, type RoomSession } from "@/lib/firebase"
-
-interface Player {
-  id: string
-  name: string
-  hasVoted: boolean
-  isOnline: boolean
-  userType: "admin" | "player" | "spectator"
-  uniqueId: string;
-  vote: string | null
-}
 
 export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params)

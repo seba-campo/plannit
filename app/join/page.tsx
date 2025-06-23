@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,6 +11,11 @@ import { ArrowLeft, Loader2, Users } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { apiClient, getErrorMessage, type JoinRoomResponse } from "@/lib/api"
+import { useRoomExitGuard } from "../room/[roomId]/useExitRoom"
+
+type CachedSession = { 
+  roomCode: string
+}
 
 export default function JoinRoom() {
   const [roomCode, setRoomCode] = useState("")
@@ -18,7 +23,17 @@ export default function JoinRoom() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [roomData, setRoomData] = useState<JoinRoomResponse | null>(null)
-  const router = useRouter()
+  const router = useRouter();
+  
+  useRoomExitGuard()
+  //Validar si viene el codigo por una redirección directa del /room
+  useEffect(() => {
+    const storage = localStorage.getItem("cachedRoomCode");
+    if(!storage)return
+
+    const session : CachedSession = JSON.parse(storage);
+    setRoomCode(session.roomCode)
+  }, []);  
 
   const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,6 +62,7 @@ export default function JoinRoom() {
 
       // Redirect to room after successful join
       setTimeout(() => {
+        sessionStorage.removeItem("cachedRoomCode");
         router.push(`/room/${response.roomCode}`)
       }, 1500)
     } catch (err) {

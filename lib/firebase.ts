@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app"
-import { getDatabase, ref, onValue, set, get, type Database, update } from "firebase/database"
+import { getDatabase, ref, onValue, set, get, remove, type Database, update } from "firebase/database"
 import { getAuth, signInAnonymously } from "firebase/auth"
 
 // Firebase configuration - you should move these to environment variables
@@ -233,6 +233,17 @@ export class FirebaseRoomService {
     const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
     const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`)
     await update(playerRef, {"userType": userType})
+  }
+
+  async removePlayer(roomId: string, playerId: string): Promise<void> {
+    const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`)
+    const snapshot = await get(participantsRef);
+    if(!snapshot.exists()) return; 
+    
+    const participants = snapshot.val();
+    const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`)
+    await remove(playerRef);
   }
 }
 

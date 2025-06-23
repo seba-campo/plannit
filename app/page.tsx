@@ -1,9 +1,12 @@
+"use client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowRight, Plus, Users } from "lucide-react"
+import { useRoomExitGuard } from "./room/[roomId]/useExitRoom"
 
 export default function LandingPage() {
+  useRoomExitGuard();
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-accent py-4">
