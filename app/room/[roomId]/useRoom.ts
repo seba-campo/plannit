@@ -55,7 +55,7 @@ export const useRoom = (roomId: string, router: any) => {
     
             return {
               id,
-              vote: player.vote !== null ? String(player.vote) : null,
+              vote: player.vote !== null ? String(player.vote) : "0",
               hasVoted: player.hasVoted || false,
               isOnline: player.isOnline || false,
               lastSeen: player.lastSeen || null,
@@ -262,6 +262,33 @@ export const useRoom = (roomId: string, router: any) => {
     }
   }
 
+  const handleLogOut = async () => {
+      var userId = roomSession?.playerId;
+      var fsRoomId = roomSession?.roomId;
+      if(!userId || !fsRoomId) return;
+
+      try{
+        await firebaseRoomService.removePlayer(fsRoomId, userId);
+      }
+      catch(e){
+        setError("Failed to remove user");
+      }
+      finally{
+        //eliminar localstorage
+        setRoomSession(undefined);
+        localStorage.removeItem("currentRoom");
+        localStorage.removeItem("cachedRoomCode");
+        router.push(`/`);
+        //
+      }
+
+  }
+
+  /*TODO 
+    Agregar un useEffect donde verifique si en la sala hay al menos 1 admin
+  */ 
+
+
  return {
     players,
     revealed,
@@ -286,5 +313,6 @@ export const useRoom = (roomId: string, router: any) => {
     getSpectatorsCount,
     allVoted,
     calculateAverage,
+    handleLogOut
   }
 }
