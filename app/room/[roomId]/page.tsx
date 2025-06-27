@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Eye, EyeOff, RotateCcw, Users, Loader2, Wifi, WifiOff, UserCheck, UserX } from "lucide-react"
+import { Eye, EyeOff, RotateCcw, Users, Loader2, Wifi, WifiOff, UserCheck, UserX, LogOut } from "lucide-react"
 import EstimationCard from "@/components/estimation-card"
 import PlayerList from "@/components/player-list"
 import Link from "next/link"
@@ -21,10 +21,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     players,
     revealed,
     roomSession,
-    roomData,
     currentUserType,
-    gameState,
-    setGameState,
     currentRound,
     isLoading,
     isConnected,
@@ -39,8 +36,8 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     getCurrentPlayerVote,
     getActivePlayersCount,
     getSpectatorsCount,
-    allVoted,
     calculateAverage,
+    handleLogOut
   } = useRoom(roomId, router)
 
   if (isLoading) {
@@ -102,6 +99,15 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
                 {currentUserType === "admin" ? "Creator" : currentUserType === "spectator" ? "Spectator" : "Player"}
               </Badge>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500 bg-transparent"
+              onClick={handleLogOut}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Exit Room
+            </Button>
           </div>
         </div>
       </header>
