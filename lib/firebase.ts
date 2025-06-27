@@ -152,7 +152,6 @@ export class FirebaseRoomService {
     if (!snapshot.exists()) return;
 
     const participants = snapshot.val();
-    console.log(participants)
     const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
 
     if (index === -1) return;
