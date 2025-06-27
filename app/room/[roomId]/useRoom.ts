@@ -109,7 +109,6 @@ export const useRoom = (roomId: string, router: any) => {
 
         setRoomSession(session)
         setCurrentUserType(session.playerType as "admin" | "player" | "spectator")
-        console.log(currentUserType)
 
         // Initialize Firebase connection
         const roomData = await firebaseRoomService.initializeRoom(session.roomId)
@@ -222,8 +221,8 @@ export const useRoom = (roomId: string, router: any) => {
 
   const getCurrentPlayerVote = () => {
     if (!roomSession || isSpectator()) return null
-    const currentPlayer = players.find((p) => p.id === roomSession.playerId)
-    return currentPlayer?.vote || null
+    const currentPlayer = players.find((p) => p.uniqueId === roomSession.playerId)
+    return currentPlayer?.vote 
   }
 
   const getActivePlayersCount = () => {
@@ -256,6 +255,7 @@ export const useRoom = (roomId: string, router: any) => {
     try {
       // console.log(roomSession.playerId)
       await firebaseRoomService.updatePlayerVote(roomSession.roomId, roomSession.playerId, value)
+      return true
     } catch (err) {
       console.error("Failed to update vote:", err)
       setError("Failed to submit vote")

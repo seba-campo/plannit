@@ -11,6 +11,8 @@ import Link from "next/link"
 import { use } from 'react'
 import { useRouter } from "next/navigation"
 import { useRoom } from "./useRoom"
+import FireEffect from "@/components/fire-effect"
+import { Value } from "@radix-ui/react-select"
 
 export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params)
@@ -147,8 +149,8 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
                 </CardContent>
               </Card>
             )}
-            <Card className="mb-8 bg-accent/50 border-accent">
-              <CardContent className="p-6">
+            <Card className="mb-8 bg-accent/50 border-accent" style={{ position: "relative", overflow: "hidden" }}>
+              <CardContent className="p-6" style={{ position: "relative", zIndex: 1 }}>
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h2 className="text-xl font-semibold">Estimation Cards</h2>
@@ -182,7 +184,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
                       value={value}
                       onClick={() => handleCardSelect(value)}
                       disabled={revealed || isSpectator()}
-                      // isSelected={getCurrentPlayerVote()}
+                      isSelected={getCurrentPlayerVote() === value}
                     />
                   ))}
                 </div>
