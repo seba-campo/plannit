@@ -9,11 +9,11 @@ export default function FireEffect() {
   const animationRef = useRef<number | null>(null);
   const particlesRef = useRef<any[]>([]);
   const paletteBase = [
-    { r: 245, g: 167, b: 66 },    // Gold
-    { r: 232, g: 90, b: 25 },     // Orange
-    { r: 255, g: 62, b: 0 },      // Bright red-orange
-    { r: 191, g: 34, b: 34 },     // Deep red
-    { r: 80, g: 20, b: 70 }       // Purple shadow
+    { r: 255, g: 255, b: 180 }, // Amarillo claro
+    { r: 255, g: 200, b: 40 },  // Amarillo fuerte
+    { r: 255, g: 120, b: 0 },   // Naranja brillante
+    { r: 255, g: 62, b: 0 },    // Rojo-naranja
+    { r: 255, g: 255, b: 255 }  // Blanco para brillos
   ];
   const paletteRef = useRef([...paletteBase]);
   const timeRef = useRef(0);
@@ -82,6 +82,9 @@ export default function FireEffect() {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(rotation);
+      // Glow effect
+      ctx.shadowColor = `rgba(${color.r},${color.g},${color.b},${Math.max(opacity, 0.5)})`;
+      ctx.shadowBlur = size * 1.2;
       const gradient = ctx.createLinearGradient(0, -size, 0, size);
       gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},0)`);
       gradient.addColorStop(0.5, `rgba(${color.r},${color.g},${color.b},${opacity})`);
@@ -93,6 +96,7 @@ export default function FireEffect() {
       ctx.quadraticCurveTo(size/2, 0, size/3, -size/2);
       ctx.closePath();
       ctx.fill();
+      ctx.shadowBlur = 0; // Remove glow for next shapes
       ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${opacity * 0.7})`;
       ctx.beginPath();
       ctx.ellipse(size/6, 0, size/4, size/2, 0, 0, Math.PI * 2);
