@@ -59,7 +59,7 @@ export default function LandingPage() {
 
       <header className="border-b border-accent py-4 relative z-10 bg-background/90 backdrop-blur-md">
         <div className="container mx-auto px-4">
-          <h1 className="text-2xl font-bold text-primary">Planning Poker</h1>
+          <h1 className="text-2xl font-bold text-primary">PlannIt</h1>
         </div>
       </header>
 

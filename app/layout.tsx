@@ -6,9 +6,9 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Planning Poker",
+  title: "PlannIt",
   description: "Agile estimation made easy",
-    generator: 'v0.dev'
+    generator: 'v1.2'
 }
 
 export default function RootLayout({
