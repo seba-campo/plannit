@@ -80,7 +80,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
       <header className="border-b border-accent py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-primary">
-            Planning Poker
+            PlannIt
           </Link>
 
           <div className="text-center">
