@@ -88,3 +88,294 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Neon-inspired Tech Background */
+@keyframes neonPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    filter: blur(0px);
+  }
+  50% {
+    opacity: 0.8;
+    filter: blur(1px);
+  }
+}
+
+@keyframes techGrid {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: translateX(0px) translateY(0px);
+  }
+  50% {
+    opacity: 0.2;
+    transform: translateX(2px) translateY(2px);
+  }
+}
+
+@keyframes dataFlow {
+  0% {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 100px));
+    opacity: 0;
+  }
+}
+
+@keyframes circuitGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.2), 0 0 10px rgba(0, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+  }
+}
+
+@keyframes hexFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+  }
+}
+
+@keyframes scanLine {
+  0% {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+/* Tech Grid Background */
+.tech-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(59, 130, 246, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.02) 1px, transparent 1px);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+  animation: techGrid 15s ease-in-out infinite;
+}
+
+/* Neon Circuit Lines */
+.circuit-lines {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.circuit-line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.6), rgba(59, 130, 246, 0.4), transparent);
+  animation: dataFlow 20s linear infinite;
+}
+
+.circuit-line-1 {
+  top: 20%;
+  height: 2px;
+  width: 200px;
+  animation-delay: 0s;
+}
+
+.circuit-line-2 {
+  top: 60%;
+  height: 1px;
+  width: 150px;
+  animation-delay: 7s;
+}
+
+.circuit-line-3 {
+  top: 80%;
+  height: 2px;
+  width: 180px;
+  animation-delay: 14s;
+}
+
+/* Hexagonal Tech Elements */
+.hex-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hex-element {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  animation: hexFloat 25s ease-in-out infinite;
+}
+
+.hex-1 {
+  top: 15%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.hex-2 {
+  top: 70%;
+  right: 15%;
+  animation-delay: 8s;
+}
+
+.hex-3 {
+  bottom: 20%;
+  left: 70%;
+  animation-delay: 16s;
+}
+
+/* Neon Orbs */
+.neon-orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 100%);
+  animation: neonPulse 12s ease-in-out infinite;
+}
+
+.neon-orb-1 {
+  width: 200px;
+  height: 200px;
+  top: 10%;
+  right: 10%;
+  animation-delay: 0s;
+  animation-duration: 18s;
+}
+
+.neon-orb-2 {
+  width: 120px;
+  height: 120px;
+  bottom: 15%;
+  left: 15%;
+  animation-delay: 6s;
+  animation-duration: 22s;
+}
+
+/* Data Nodes */
+.data-nodes {
+  position: absolute;
+  inset: 0;
+}
+
+.data-node {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(0, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: circuitGlow 8s ease-in-out infinite;
+}
+
+.data-node::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: neonPulse 6s ease-in-out infinite;
+}
+
+.node-1 {
+  top: 25%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.node-2 {
+  top: 45%;
+  right: 25%;
+  animation-delay: 2s;
+}
+
+.node-3 {
+  bottom: 30%;
+  left: 60%;
+  animation-delay: 4s;
+}
+
+.node-4 {
+  top: 65%;
+  left: 40%;
+  animation-delay: 6s;
+}
+
+/* Scanning Line Effect */
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.8), transparent);
+  animation: scanLine 30s linear infinite;
+  filter: blur(0.5px);
+}
+
+/* Connection Lines */
+.connection-lines {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.connection-line {
+  position: absolute;
+  background: rgba(59, 130, 246, 0.1);
+  transform-origin: left center;
+}
+
+.conn-1 {
+  top: 25%;
+  left: 20%;
+  width: 100px;
+  height: 1px;
+  transform: rotate(45deg);
+}
+
+.conn-2 {
+  top: 45%;
+  right: 25%;
+  width: 80px;
+  height: 1px;
+  transform: rotate(-30deg);
+}
+
+.conn-3 {
+  bottom: 30%;
+  left: 60%;
+  width: 60px;
+  height: 1px;
+  transform: rotate(60deg);
+}
+
+/* Enhanced card effects */
+.tech-card-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), 0 0 40px rgba(59, 130, 246, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-color: rgba(0, 255, 255, 0.3);
+}
