@@ -80,6 +80,54 @@ export default function JoinRoom() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Neon Tech Background */}
+      <div className="fixed inset-0 -z-10">
+        {/* Base gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950/30 to-slate-950"></div>
+
+        {/* Tech grid overlay */}
+        <div className="tech-grid"></div>
+
+        {/* Neon elements */}
+        <div className="absolute inset-0">
+          {/* Circuit lines */}
+          <div className="circuit-lines">
+            <div className="circuit-line circuit-line-1"></div>
+            <div className="circuit-line circuit-line-2"></div>
+            <div className="circuit-line circuit-line-3"></div>
+          </div>
+
+          {/* Hexagonal elements */}
+          <div className="hex-container">
+            <div className="hex-element hex-1"></div>
+            <div className="hex-element hex-2"></div>
+            <div className="hex-element hex-3"></div>
+          </div>
+
+          {/* Neon orbs */}
+          <div className="neon-orb neon-orb-1"></div>
+          <div className="neon-orb neon-orb-2"></div>
+
+          {/* Data nodes */}
+          <div className="data-nodes">
+            <div className="data-node node-1"></div>
+            <div className="data-node node-2"></div>
+            <div className="data-node node-3"></div>
+            <div className="data-node node-4"></div>
+          </div>
+
+          {/* Connection lines */}
+          <div className="connection-lines">
+            <div className="connection-line conn-1"></div>
+            <div className="connection-line conn-2"></div>
+            <div className="connection-line conn-3"></div>
+          </div>
+
+          {/* Scanning line */}
+          <div className="scan-line"></div>
+        </div>
+      </div>
+
       <header className="border-b border-accent py-4">
         <div className="container mx-auto px-4 flex items-center">
           <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground">
