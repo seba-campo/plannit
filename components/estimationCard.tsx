@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import FireEffect from "./fire-effect"
+import FireEffect from "./fireEffect"
 
 interface EstimationCardProps {
   value: string

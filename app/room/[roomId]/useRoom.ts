@@ -6,34 +6,31 @@ import { useRoomExitGuard } from "./useExitRoom"
 import { usePathname } from "next/navigation"
 // importar servicios y tipos necesarios
 import { firebaseRoomService, type FirebaseRoom, type RoomSession } from "@/lib/firebase"
+import { calculateAverage } from "@/utils/calculateAverage"
 
-interface Player {
-  id: string
-  name: string
-  hasVoted: boolean
-  isOnline: boolean
-  userType: "admin" | "player" | "spectator"
-  uniqueId: string;
-  vote: string | null
-}
 
-export const useRoom = (roomId: string, router: any) => {
-  const [players, setPlayers] = useState<Player[]>([])
+
+const useRoom = (roomId: string, router: any) => {
+  const [players, setPlayers] = useState<Player[]>([]);
   const [revealed, setRevealed] = useState(false)
   const [roomSession, setRoomSession] = useState<RoomSession>()
   const [roomData, setRoomData] = useState<FirebaseRoom | null>(null)
   const [currentUserType, setCurrentUserType] = useState<"admin" | "player" | "spectator">("player")
   const [gameState, setGameState] = useState<"waiting" | "voting" | "revealed">("waiting")    
-  const unsubscribeRef = useRef<(() => void)[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [currentRound, setCurrentRound] = useState(1)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isConnected, setIsConnected] = useState(false)
-  const [currentPlayer, setCurrentPlayer] = useState<Player>()
-  const [isUpdatingUserType, setIsUpdatingUserType] = useState(false)
+  const unsubscribeRef = useRef<(() => void)[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [currentRound, setCurrentRound] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [currentPlayer, setCurrentPlayer] = useState<Player>();
+  const [isUpdatingUserType, setIsUpdatingUserType] = useState(false);
   const pathname = usePathname()
+  const isCreator = () => currentUserType === "admin"
+  const isSpectator = () => currentUserType === "spectator";
+  const average = calculateAverage(players);
+  const allVoted = players.filter((p) => p.isOnline && p.userType !== "spectator").every((player) => player.hasVoted);
 
-  useRoomExitGuard(roomSession)
+  useRoomExitGuard(roomSession);
 
   const setupRealtimeListeners = useCallback((roomId: string) => {
      // Listen for room updates
@@ -94,17 +91,17 @@ export const useRoom = (roomId: string, router: any) => {
         const storedSession = localStorage.getItem("currentRoom")
         if (!storedSession) {
           const storageSession = {roomCode: roomId}
-            localStorage.setItem("cachedRoomCode", JSON.stringify(storageSession))
-            router.push("/join")
-            return
+          localStorage.setItem("cachedRoomCode", JSON.stringify(storageSession))
+          router.push("/join")
+          return
         }
 
-        const session: RoomSession = JSON.parse(storedSession)
+        const session: RoomSession = JSON.parse(storedSession);
 
         // Validate that the room code matches the URL
         if (session.roomCode != roomId) {
-            router.push("/join")
-            return
+          router.push("/join")
+          return
         }
 
         setRoomSession(session)
@@ -114,9 +111,9 @@ export const useRoom = (roomId: string, router: any) => {
         const roomData = await firebaseRoomService.initializeRoom(session.roomId)
 
         if (!roomData) {
-            setError("Room not found or has been deleted")
-            setIsLoading(false)
-            return
+          setError("Room not found or has been deleted")
+          setIsLoading(false)
+          return
         }
 
         setRoomData(roomData)
@@ -165,7 +162,7 @@ export const useRoom = (roomId: string, router: any) => {
       firebaseRoomService.removePlayer(roomId, roomSession.playerId)
       window.removeEventListener("beforeunload", handleBeforeUnload)
     }
-  }, [roomId, router, pathname] )
+  }, [roomId, router, pathname])
   
   //maneja visibilidades
   useEffect(() => {
@@ -179,7 +176,6 @@ export const useRoom = (roomId: string, router: any) => {
     document.addEventListener("visibilitychange", handleVisibilityChange)
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange)
   }, [roomSession])
-
 
   //Handlers
   const handleUserTypeToggle = async () => {
@@ -216,9 +212,6 @@ export const useRoom = (roomId: string, router: any) => {
     }
   }
 
-  const isCreator = () => currentUserType === "admin"
-  const isSpectator = () => currentUserType === "spectator"
-
   const getCurrentPlayerVote = () => {
     if (!roomSession || isSpectator()) return null
     const currentPlayer = players.find((p) => p.uniqueId === roomSession.playerId)
@@ -232,22 +225,6 @@ export const useRoom = (roomId: string, router: any) => {
   const getSpectatorsCount = () => {
     return players.filter((p) => p.isOnline && p.userType === "spectator").length
   }
-
-  const allVoted = players
-    .filter((p) => p.isOnline && p.userType !== "spectator")
-    .every((player) => player.hasVoted);
-
-  const calculateAverage = () => {
-    const numericVotes = players
-      .filter((p) => p.vote && p.vote !== "?" && p.vote !== '0' && p.isOnline && p.userType !== "spectator")
-      .map((p) => Number.parseInt(p.vote as string))
-      .filter((vote) => !isNaN(vote))
-
-    if (numericVotes.length === 0) return "-"
-    const sum = numericVotes.reduce((acc, val) => acc + val, 0)
-    return (sum / numericVotes.length).toFixed(1)
-  }
-
   
   const handleCardSelect = async (value: string) => {
     if (!roomSession || revealed || currentUserType === "spectator") return
@@ -287,8 +264,7 @@ export const useRoom = (roomId: string, router: any) => {
   /*TODO 
     Agregar un useEffect donde verifique si en la sala hay al menos 1 admin
   */ 
-
-
+ 
  return {
     players,
     revealed,
@@ -312,7 +288,9 @@ export const useRoom = (roomId: string, router: any) => {
     getActivePlayersCount,
     getSpectatorsCount,
     allVoted,
-    calculateAverage,
+    average,
     handleLogOut
   }
 }
+
+export default useRoom
