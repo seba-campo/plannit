@@ -36,6 +36,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     average,
     getActivePlayersCount,
     getSpectatorsCount,
+    atLeastOnePlayerVoted,
     dataError
   } = useRoomData(roomSession?.roomId || "", !!roomSession)
 
@@ -100,29 +101,8 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           {/* COLUMNA IZQUIERDA - Votación Actual */}
           <div className="w-full order-2 lg:order-1">
             <CurrentItemBanner
-              currentCard={{
-                id: "current-1",
-                title: "Implementar sistema de autenticación",
-                link: "https://linear.app/issue/PLAN-123",
-                votingValue: null,
-                status: "voting"
-              }}
-              history={[
-                {
-                  id: "hist-1",
-                  title: "Refactorizar componente de header",
-                  link: "https://linear.app/issue/PLAN-122",
-                  votingValue: 5,
-                  status: "completed"
-                },
-                {
-                  id: "hist-2",
-                  title: "Agregar tests unitarios",
-                  link: "https://linear.app/issue/PLAN-121",
-                  votingValue: 3,
-                  status: "completed"
-                }
-              ]}
+              currentCard={undefined}
+              history={[]}
             />
           </div>
 
@@ -145,6 +125,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
               userRole={userRole}
               userStatus={userStatus}
               currentPlayerVote={getCurrentPlayerVote() ?? null}
+              atLeastOnePlayerVoted={atLeastOnePlayerVoted}
               setUserStatus={setUserStatus}
             />
 

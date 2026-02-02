@@ -15,6 +15,8 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
     const [isLoading, setIsLoading] = useState(true)
     const [isConnected, setIsConnected] = useState(false)
 
+    const atLeastOnePlayerVoted = players.some((player) => player.hasVoted)
+
     const unsubscribeRef = useRef<(() => void)[]>([])
 
     const setupRealtimeListeners = useCallback((id: string) => {
@@ -115,6 +117,7 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         setGameState,
         currentRound,
         isLoading,
+        atLeastOnePlayerVoted,
         isConnected,
         average,
         allVoted,

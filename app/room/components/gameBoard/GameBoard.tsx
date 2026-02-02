@@ -13,6 +13,7 @@ interface IGameBoard {
     userRole: "admin" | "player";
     userStatus: "player" | "spectator";
     currentPlayerVote: string | null;
+    atLeastOnePlayerVoted: boolean;
     setUserStatus: (status: "player" | "spectator") => void;
 }
 
@@ -22,20 +23,22 @@ const GameBoard = ({
     userRole,
     userStatus,
     currentPlayerVote,
-    setUserStatus
+    atLeastOnePlayerVoted,
+    setUserStatus,
 }: IGameBoard) => {
     const {
         handleCardSelect,
         handleReveal,
         handleReset,
         handleUserTypeToggle
+
     } = useRoomActions(roomSession, userStatus);
 
     const isCreator = () => userRole === "admin";
     const isSpectator = () => userStatus === "spectator";
 
-    const isRevealDisabled = isCreator() && revealed;
-    const isResetDisabled = isCreator() && !revealed;
+    const isRevealDisabled = !revealed && !atLeastOnePlayerVoted;
+    const isResetDisabled = !revealed;
 
     const onUserTypeToggle = () => {
         handleUserTypeToggle(setUserStatus);
@@ -82,7 +85,7 @@ const GameBoard = ({
                                 className="flex-1 sm:flex-none"
                             >
                                 <RotateCcw className="mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">New Round</span>
+                                <span className="hidden sm:inline">Next Round</span>
                                 <span className="sm:hidden">Reset</span>
                             </Button>
                         </div>
