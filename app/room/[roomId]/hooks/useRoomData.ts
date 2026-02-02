@@ -1,0 +1,125 @@
+import { useState, useEffect, useCallback, useRef } from "react"
+import { firebaseRoomService, type FirebaseRoom } from "@/lib/firebase"
+import { calculateAverage } from "@/utils/calculateAverage"
+import Player from "@/interfaces/Player"
+
+export const useRoomData = (roomId: string, isSessionReady: boolean) => {
+    const [players, setPlayers] = useState<Player[]>([])
+    const [roomData, setRoomData] = useState<FirebaseRoom | null>(null)
+    const [dataError, setDataError] = useState<string | null>(null)
+
+    const [revealed, setRevealed] = useState(false)
+    const [gameState, setGameState] = useState<"waiting" | "voting" | "revealed">("waiting")
+    const [currentRound, setCurrentRound] = useState(1)
+
+    const [isLoading, setIsLoading] = useState(true)
+    const [isConnected, setIsConnected] = useState(false)
+
+    const unsubscribeRef = useRef<(() => void)[]>([])
+
+    const setupRealtimeListeners = useCallback((id: string) => {
+        // Listen for room updates
+        const roomUnsubscribe = firebaseRoomService.subscribeToRoom(id, (room) => {
+            if (room) {
+                setRoomData(room)
+                setRevealed(room.isRevealed || false)
+                setGameState(room.gameState || "waiting")
+                setCurrentRound(room.currentRound || 1)
+                setIsLoading(false)
+                setIsConnected(true)
+            }
+        })
+
+        // Listen for players updates
+        const playersUnsubscribe = firebaseRoomService.subscribeToPlayers(id, (playersData) => {
+            const data = playersData
+            const playersList: any = Object.entries(data).map(([id, player]) => {
+                if (!player) return null
+
+                return {
+                    id,
+                    vote: player.vote !== null && player.currentStatus !== 'spectator' ? String(player.vote) : "0",
+                    hasVoted: player.hasVoted || false,
+                    isOnline: player.isOnline || false,
+                    lastSeen: player.lastSeen || null,
+                    name: player.name,
+                    uniqueId: player.uniqueId,
+                    userType: player.userType || "player",
+                    currentStatus: player.currentStatus || "player"
+                }
+            }).filter(Boolean)
+            setPlayers(playersList)
+        })
+
+        unsubscribeRef.current = [roomUnsubscribe, playersUnsubscribe]
+    }, [])
+
+    useEffect(() => {
+        let mounted = true;
+        const initData = async () => {
+            if (isSessionReady && roomId) {
+                try {
+                    const initialRoom = await firebaseRoomService.initializeRoom(roomId)
+
+                    if (!mounted) return;
+
+                    if (!initialRoom) {
+                        setDataError("Room not found or has been deleted")
+                        setIsLoading(false)
+                        return
+                    }
+
+                    setRoomData(initialRoom)
+                    setRevealed(initialRoom.isRevealed || false)
+                    setGameState(initialRoom.gameState || "waiting")
+                    setCurrentRound(initialRoom.currentRound || 1)
+                    setIsConnected(true)
+
+                    setupRealtimeListeners(roomId)
+                } catch (err) {
+                    if (mounted) {
+                        setDataError("Failed to connect to room")
+                        setIsLoading(false)
+                    }
+                } finally {
+                    if (mounted && !dataError) setIsLoading(false)
+                }
+            }
+        }
+
+        initData()
+
+        return () => {
+            mounted = false;
+            unsubscribeRef.current.forEach((unsubscribe) => unsubscribe())
+            unsubscribeRef.current = []
+        }
+    }, [roomId, isSessionReady, setupRealtimeListeners])
+
+    const average = calculateAverage(players)
+    const allVoted = players.filter((p) => p.isOnline && p.currentStatus !== "spectator").every((player) => player.hasVoted)
+
+    const getActivePlayersCount = () => {
+        return players.filter((p) => p.isOnline && p.currentStatus !== "spectator").length
+    }
+
+    const getSpectatorsCount = () => {
+        return players.filter((p) => p.isOnline && p.currentStatus === "spectator").length
+    }
+
+    return {
+        players,
+        roomData,
+        revealed,
+        gameState,
+        setGameState,
+        currentRound,
+        isLoading,
+        isConnected,
+        average,
+        allVoted,
+        getActivePlayersCount,
+        getSpectatorsCount,
+        dataError
+    }
+}

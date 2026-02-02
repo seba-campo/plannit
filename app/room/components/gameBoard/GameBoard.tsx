@@ -4,32 +4,43 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff, RotateCcw, UserX } from "lucide-react";
 import cardValues from "../../[roomId]/utilsRoom";
+import { useRoomActions } from "../../[roomId]/hooks/useRoomActions";
+import { RoomSession } from "@/lib/firebase";
 
 interface IGameBoard {
-    isSpectator: () => boolean;
-    isCreator: () => boolean;
-    handleCardSelect: (value: string) => void;
-    handleReveal: () => void;
-    handleReset: () => void;
-    getCurrentPlayerVote: () => any;
+    roomSession: RoomSession | undefined;
     revealed: boolean;
-    isRevealDisabled: boolean;
-    isResetDisabled: boolean;
-    handleUserTypeToggle: () => void;
+    userRole: "admin" | "player";
+    userStatus: "player" | "spectator";
+    currentPlayerVote: string | null;
+    setUserStatus: (status: "player" | "spectator") => void;
 }
 
 const GameBoard = ({
-    isSpectator,
-    isCreator,
-    handleCardSelect,
-    handleReveal,
-    handleReset,
+    roomSession,
     revealed,
-    getCurrentPlayerVote,
-    isRevealDisabled,
-    isResetDisabled,
-    handleUserTypeToggle
+    userRole,
+    userStatus,
+    currentPlayerVote,
+    setUserStatus
 }: IGameBoard) => {
+    const {
+        handleCardSelect,
+        handleReveal,
+        handleReset,
+        handleUserTypeToggle
+    } = useRoomActions(roomSession, userStatus);
+
+    const isCreator = () => userRole === "admin";
+    const isSpectator = () => userStatus === "spectator";
+
+    const isRevealDisabled = isCreator() && revealed;
+    const isResetDisabled = isCreator() && !revealed;
+
+    const onUserTypeToggle = () => {
+        handleUserTypeToggle(setUserStatus);
+    }
+
     return (
         <Card className="mb-8 bg-accent/50 border-accent" style={{ position: "relative", overflow: "hidden" }}>
             <CardContent className="p-6" style={{ position: "relative", zIndex: 1 }}>
@@ -40,7 +51,7 @@ const GameBoard = ({
                             <p className="text-sm text-muted-foreground">You're watching as a spectator</p>
                         ) : (
                             <p className="text-sm text-muted-foreground">
-                                {getCurrentPlayerVote() ? `Your vote: ${getCurrentPlayerVote()}` : "Select your estimate"}
+                                {currentPlayerVote ? `Your vote: ${currentPlayerVote}` : "Select your estimate"}
                             </p>
                         )}
                     </div>
@@ -49,14 +60,14 @@ const GameBoard = ({
                         <div className="flex gap-2 w-full sm:w-auto">
                             <Button
                                 variant="outline"
-                                onClick={handleUserTypeToggle}
+                                onClick={onUserTypeToggle}
                             >
                                 <UserX className="mr-2 h-4 w-4" />
                                 {isSpectator() ? "Join as Player" : "Watch as Spectator"}
                             </Button>
                             <Button
                                 variant="outline"
-                                onClick={handleReveal}
+                                onClick={() => handleReveal(true, revealed)}
                                 disabled={isRevealDisabled}
                                 className="flex-1 sm:flex-none"
                             >
@@ -66,7 +77,7 @@ const GameBoard = ({
                             </Button>
                             <Button
                                 variant="outline"
-                                onClick={handleReset}
+                                onClick={() => handleReset(true)}
                                 disabled={isResetDisabled}
                                 className="flex-1 sm:flex-none"
                             >
@@ -83,9 +94,9 @@ const GameBoard = ({
                         <EstimationCard
                             key={value}
                             value={value}
-                            onClick={() => handleCardSelect(value)}
+                            onClick={() => handleCardSelect(value, revealed)}
                             disabled={revealed || isSpectator()}
-                            isSelected={getCurrentPlayerVote() === value}
+                            isSelected={currentPlayerVote === value}
                         />
                     ))}
                 </div>

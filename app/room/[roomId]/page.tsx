@@ -1,9 +1,11 @@
 "use client"
 
 import { use } from 'react'
-import useRoom from "./useRoom"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useRoomSession } from "./hooks/useRoomSession"
+import { useRoomData } from "./hooks/useRoomData"
+import { useRoomActions } from "./hooks/useRoomActions"
 import Error from "@/app/room/components/error/Error"
 import HeaderInformation from "@/app/room/components/header/Header"
 import CurrentItemCard from "@/app/room/components/currentItemCard/currentItemCard"
@@ -17,31 +19,32 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   const router = useRouter()
 
   const {
+    roomSession,
+    userRole,
+    userStatus,
+    isSessionLoading,
+    sessionError,
+    setUserStatus
+  } = useRoomSession(roomId)
+
+  const {
     players,
     revealed,
-    roomSession,
-    currentUserType,
     currentRound,
-    isLoading,
+    isLoading: isDataLoading,
     isConnected,
-    isUpdatingUserType,
-    isRevealDisabled,
-    isNewRoundDisabled,
-    error,
-    handleCardSelect,
-    handleUserTypeToggle,
-    handleReveal,
-    handleReset,
-    isCreator,
-    isSpectator,
-    getCurrentPlayerVote,
+    average,
     getActivePlayersCount,
     getSpectatorsCount,
-    average,
-    handleLogOut,
-  } = useRoom(roomId, router)
+    dataError
+  } = useRoomData(roomSession?.roomId || "", !!roomSession)
 
-  if (isLoading) {
+  // Actions for the page (like Logout in header)
+  // GameBoard instantiates its own actions, but Header needs logout.
+  // We can instantiate actions here for shared needs or just for Logout.
+  const { handleLogOut, handleUserTypeToggle, isUpdatingUserType } = useRoomActions(roomSession, userStatus)
+
+  if (isSessionLoading || (isDataLoading && !sessionError && !dataError)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -52,14 +55,23 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     )
   }
 
-  if (error) {
+  if (sessionError || dataError) {
     return (
-      <Error errorMessage={error} />
+      <Error errorMessage={sessionError || dataError || "Unknown error"} />
     )
   }
 
   if (!roomSession) {
     return (<Error errorMessage={"Error interno, no existe la sesión."} />)
+  }
+
+  const isCreator = () => userRole === "admin"
+  const isSpectator = () => userStatus === "spectator"
+
+  const getCurrentPlayerVote = () => {
+    if (!roomSession || isSpectator()) return null
+    const currentPlayer = players.find((p) => p.uniqueId === roomSession.playerId)
+    return currentPlayer?.vote
   }
 
   return (
@@ -69,8 +81,8 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
         <HeaderInformation
           roomId={roomId}
           currentRound={currentRound}
-          handleLogOut={handleLogOut}
-          currentUserType={currentUserType}
+          handleLogOut={() => handleLogOut(router)}
+          currentUserType={userRole}
           roomSession={roomSession}
           isConnected={isConnected}
           isCreator={isCreator}
@@ -117,27 +129,23 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           {/* COLUMNA CENTRAL - Game Board */}
           <div className="w-full order-1 lg:order-2">
             {/* User Type Toggle Button */}
-            {currentUserType !== "admin" && (
+            {userRole !== "admin" && (
               <ToggleUserType
                 isSpectator={isSpectator}
                 isCreator={isCreator}
-                handleUserTypeToggle={handleUserTypeToggle}
+                handleUserTypeToggle={() => handleUserTypeToggle(setUserStatus)}
                 isUpdatingUserType={isUpdatingUserType}
               />
             )}
 
             {/* Board de las cartas. */}
             <GameBoard
-              isSpectator={isSpectator}
-              isCreator={isCreator}
-              handleCardSelect={handleCardSelect}
-              handleReveal={handleReveal}
-              handleReset={handleReset}
+              roomSession={roomSession}
               revealed={revealed}
-              getCurrentPlayerVote={getCurrentPlayerVote}
-              isRevealDisabled={isRevealDisabled}
-              isResetDisabled={isNewRoundDisabled}
-              handleUserTypeToggle={handleUserTypeToggle}
+              userRole={userRole}
+              userStatus={userStatus}
+              currentPlayerVote={getCurrentPlayerVote() ?? null}
+              setUserStatus={setUserStatus}
             />
 
             {/* Lista de jugadores */}
