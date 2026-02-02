@@ -6,9 +6,21 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "PlannIt",
+  author: "Sebastián Campo",
   description: "Agile estimation made easy",
-    generator: 'v1.2'
+  generator: 'v1.2',
+  keywords: [
+    "Planning Poker",
+    "Agile Estimation",
+    "Scrum Poker",
+    "Story Point Estimation",
+    "Agile Development",
+    "Task Estimation",
+    "Remote Teams",
+    "Collaborative Planning",
+    "Software Development",
+    "Project Management",
+  ],
 }
 
 export default function RootLayout({
