@@ -2,7 +2,7 @@ import EstimationCard from "@/components/estimationCard"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Eye, EyeOff, RotateCcw, UserX } from "lucide-react";
 import cardValues from "../../[roomId]/utilsRoom";
 
 interface IGameBoard {
@@ -13,6 +13,9 @@ interface IGameBoard {
     handleReset: () => void;
     getCurrentPlayerVote: () => any;
     revealed: boolean;
+    isRevealDisabled: boolean;
+    isResetDisabled: boolean;
+    handleUserTypeToggle: () => void;
 }
 
 const GameBoard = ({
@@ -23,6 +26,9 @@ const GameBoard = ({
     handleReset,
     revealed,
     getCurrentPlayerVote,
+    isRevealDisabled,
+    isResetDisabled,
+    handleUserTypeToggle
 }: IGameBoard) => {
     return (
         <Card className="mb-8 bg-accent/50 border-accent" style={{ position: "relative", overflow: "hidden" }}>
@@ -43,8 +49,15 @@ const GameBoard = ({
                         <div className="flex gap-2 w-full sm:w-auto">
                             <Button
                                 variant="outline"
+                                onClick={handleUserTypeToggle}
+                            >
+                                <UserX className="mr-2 h-4 w-4" />
+                                {isSpectator() ? "Join as Player" : "Watch as Spectator"}
+                            </Button>
+                            <Button
+                                variant="outline"
                                 onClick={handleReveal}
-                                disabled={revealed}
+                                disabled={isRevealDisabled}
                                 className="flex-1 sm:flex-none"
                             >
                                 {revealed ? <Eye className="mr-2 h-4 w-4" /> : <EyeOff className="mr-2 h-4 w-4" />}
@@ -54,6 +67,7 @@ const GameBoard = ({
                             <Button
                                 variant="outline"
                                 onClick={handleReset}
+                                disabled={isResetDisabled}
                                 className="flex-1 sm:flex-none"
                             >
                                 <RotateCcw className="mr-2 h-4 w-4" />

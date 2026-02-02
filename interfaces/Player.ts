@@ -1,4 +1,5 @@
-type UserType = "admin" | "player" | "spectator";
+type UserType = "admin" | "player";
+type UserStatus = "player" | "spectator";
 
 interface IPlayer {
   id: string
@@ -6,6 +7,7 @@ interface IPlayer {
   hasVoted: boolean
   isOnline: boolean
   userType: UserType
+  currentStatus: UserStatus
   uniqueId: string;
   vote: string | null
 }

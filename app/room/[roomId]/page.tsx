@@ -25,6 +25,8 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     isLoading,
     isConnected,
     isUpdatingUserType,
+    isRevealDisabled,
+    isNewRoundDisabled,
     error,
     handleCardSelect,
     handleUserTypeToggle,
@@ -36,7 +38,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     getActivePlayersCount,
     getSpectatorsCount,
     average,
-    handleLogOut
+    handleLogOut,
   } = useRoom(roomId, router)
 
   if (isLoading) {
@@ -118,6 +120,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
             {currentUserType !== "admin" && (
               <ToggleUserType
                 isSpectator={isSpectator}
+                isCreator={isCreator}
                 handleUserTypeToggle={handleUserTypeToggle}
                 isUpdatingUserType={isUpdatingUserType}
               />
@@ -132,6 +135,9 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
               handleReset={handleReset}
               revealed={revealed}
               getCurrentPlayerVote={getCurrentPlayerVote}
+              isRevealDisabled={isRevealDisabled}
+              isResetDisabled={isNewRoundDisabled}
+              handleUserTypeToggle={handleUserTypeToggle}
             />
 
             {/* Lista de jugadores */}

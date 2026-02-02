@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app"
-import { getDatabase, ref, onValue, set, get, remove, type Database, update } from "firebase/database"
+import { getDatabase, ref, onValue, set, get, remove, type Database, update, runTransaction } from "firebase/database"
 import { getAuth, signInAnonymously } from "firebase/auth"
 
 // Firebase configuration - you should move these to environment variables
@@ -11,7 +11,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId:  process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 }
 
 // Initialize Firebase
@@ -30,16 +30,16 @@ signInAnonymously(auth)
 
 // Types for Firebase data structure
 export interface FirebasePlayer {
-  // currentStatus: "spectator" | "player"
+  currentStatus: "spectator" | "player"
   name: string,
   uniqueId: string,
-  userType: "admin" | "player" | "spectator"
+  userType: "admin" | "player"
   vote: number | null
   hasVoted: boolean
   lastSeen: number
   isOnline: boolean
   selection: number | null
-}   
+}
 
 export interface FirebaseRoom {
   averageScore: number
@@ -57,6 +57,7 @@ export interface RoomSession {
   playerId: string
   playerName: string
   playerType: "player" | "admin"
+  currentStatus: "player" | "spectator"
 }
 
 // Firebase service class
@@ -168,7 +169,19 @@ export class FirebaseRoomService {
     const gameStateRef = ref(this.database, `planningRooms/${roomId}/gameState`)
     const isRevealedRef = ref(this.database, `planningRooms/${roomId}/isRevealed`)
 
-    await Promise.all([update(gameStateRef, {"gameState": "revealed"}), update(isRevealedRef, {"isRevealed": true})])
+    await Promise.all([update(gameStateRef, { "gameState": "revealed" }), update(isRevealedRef, { "isRevealed": true })])
+  }
+
+  async addOneToCurrentRound(roomId: string): Promise<void> {
+    const currentRoundRef = ref(this.database, `planningRooms/${roomId}/currentRound`)
+    try {
+      await runTransaction(currentRoundRef, (currentRound) => {
+        return (currentRound || 0) + 1
+      })
+    } catch (error) {
+      console.error("Error incrementing round:", error)
+      throw error
+    }
   }
 
   // Reset votes for new round
@@ -183,7 +196,6 @@ export class FirebaseRoomService {
         playersRef,
         async (snapshot) => {
           const players = snapshot.val() || {}
-          // console.log(players)
 
           // Reset each player's vote
           Object.keys(players).forEach((player, i) => {
@@ -194,9 +206,7 @@ export class FirebaseRoomService {
           // Reset game state
           updates[`planningRooms/${roomId}/gameState`] = "voting"
           updates[`planningRooms/${roomId}/isRevealed`] = false
-          updates[`planningRooms/${roomId}/currentRound`] = (players.currentRound || 0) + 1
 
-          console.log("updates to be done", updates)
           try {
             await update(ref(this.database), updates)
             resolve()
@@ -219,31 +229,33 @@ export class FirebaseRoomService {
     })
   }
 
-  // Clean up all subscriptions
-  cleanup(): void {
-    this.unsubscribers.forEach((unsubscribe) => unsubscribe())
-    this.unsubscribers = []
-  }
-    // Update player's user type (spectator/player)
-  async updatePlayerType(roomId: string, playerId: string, userType: "spectator" | "player"): Promise<void> {
+  // Update player's current status (spectator/player)
+  async updatePlayerCurrentStatus(roomId: string, playerId: string, currentStatus: "spectator" | "player"): Promise<void> {
     const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`)
     const snapshot = await get(participantsRef);
     const participants = snapshot.val();
     const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
     const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`)
-    await update(playerRef, {"userType": userType})
+    await update(playerRef, { "currentStatus": currentStatus })
   }
 
   async removePlayer(roomId: string, playerId: string): Promise<void> {
     const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`)
     const snapshot = await get(participantsRef);
-    if(!snapshot.exists()) return; 
-    
+    if (!snapshot.exists()) return;
+
     const participants = snapshot.val();
     const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
     const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`)
     await remove(playerRef);
   }
+
+  // Clean up all subscriptions
+  cleanup(): void {
+    this.unsubscribers.forEach((unsubscribe) => unsubscribe())
+    this.unsubscribers = []
+  }
+
 }
 
 

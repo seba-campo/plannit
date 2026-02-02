@@ -6,12 +6,14 @@ interface IToggleUserType {
     isSpectator: () => boolean;
     handleUserTypeToggle: () => void;
     isUpdatingUserType: boolean;
+    isCreator: () => boolean;
 }
 
 const ToggleUserType = ({
     isSpectator,
     handleUserTypeToggle,
-    isUpdatingUserType
+    isUpdatingUserType,
+    isCreator
 }: IToggleUserType) => {
     return (
         <Card className="mb-4 bg-accent/50 border-accent">
@@ -38,7 +40,7 @@ const ToggleUserType = ({
                         ) : (
                             <UserX className="mr-2 h-4 w-4" />
                         )}
-                        {isSpectator() ? "Join as Player" : "Watch as Spectator"}
+                        {isSpectator() || isCreator() ? "Join as Player" : "Watch as Spectator"}
                     </Button>
                 </div>
             </CardContent>

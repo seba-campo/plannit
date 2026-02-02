@@ -19,7 +19,6 @@ export default function FireEffect() {
   const timeRef = useRef(0);
   const lastUpdateTimeRef = useRef(0);
 
-  // Resize canvas to fit parent
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -42,10 +41,10 @@ export default function FireEffect() {
     if (!ctx) return;
     let running = true;
 
-    // Inicializar partículas
     function createParticles() {
       if (!canvas) return;
-      const particleCount = Math.floor((canvas.width * canvas.height) / 3000);
+      if (!canvas || canvas.width === 0 || canvas.height === 0) return;
+      const particleCount = Math.max(Math.floor((canvas.width * canvas.height) / 3000), 15);
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push({
           x: Math.random() * canvas.width,
@@ -91,15 +90,15 @@ export default function FireEffect() {
       gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b},0)`);
       ctx.fillStyle = gradient;
       ctx.beginPath();
-      ctx.moveTo(-size/3, -size);
-      ctx.quadraticCurveTo(size/2, 0, -size/3, size);
-      ctx.quadraticCurveTo(size/2, 0, size/3, -size/2);
+      ctx.moveTo(-size / 3, -size);
+      ctx.quadraticCurveTo(size / 2, 0, -size / 3, size);
+      ctx.quadraticCurveTo(size / 2, 0, size / 3, -size / 2);
       ctx.closePath();
       ctx.fill();
       ctx.shadowBlur = 0; // Remove glow for next shapes
       ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${opacity * 0.7})`;
       ctx.beginPath();
-      ctx.ellipse(size/6, 0, size/4, size/2, 0, 0, Math.PI * 2);
+      ctx.ellipse(size / 6, 0, size / 4, size / 2, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
