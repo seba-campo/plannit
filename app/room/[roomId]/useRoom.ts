@@ -55,11 +55,12 @@ const useRoom = (roomId: string, router: any) => {
     const playersUnsubscribe = firebaseRoomService.subscribeToPlayers(roomId, (playersData) => {
       const data = playersData;
       const playersList: any = Object.entries(data).map(([id, player]) => {
-        if (!player) return null  // opcional: protegerte contra errores
+        if (!player) return null;
 
+        //Aca se valida si el user es spectador, en caso de error se muestra 0
         return {
           id,
-          vote: player.vote !== null ? String(player.vote) : "0",
+          vote: player.vote !== null && player.currentStatus !== 'spectator' ? String(player.vote) : "0",
           hasVoted: player.hasVoted || false,
           isOnline: player.isOnline || false,
           lastSeen: player.lastSeen || null,
@@ -82,8 +83,6 @@ const useRoom = (roomId: string, router: any) => {
             setUserStatus(currentPlayer.currentStatus)
           }
 
-          // Update localStorage with new user type if needed (role usually doesn't change dynamicall easily but status might)
-          // Actually, let's keep session sync simple or check if we need to update session
           if (currentPlayer.userType !== roomSession.playerType || currentPlayer.currentStatus !== roomSession.currentStatus) {
             const updatedSession = {
               ...roomSession,
