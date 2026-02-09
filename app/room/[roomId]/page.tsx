@@ -37,6 +37,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     getActivePlayersCount,
     getSpectatorsCount,
     atLeastOnePlayerVoted,
+    getRoomLongId,
     dataError
   } = useRoomData(roomSession?.roomId || "", !!roomSession)
 
@@ -101,6 +102,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           {/* COLUMNA IZQUIERDA - Votación Actual */}
           <div className="w-full order-2 lg:order-1">
             <CurrentItemBanner
+              roomId={getRoomLongId()}
               currentCard={undefined}
               history={[]}
             />
@@ -143,7 +145,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           {/* COLUMNA DERECHA - What's Next */}
           {isCreator() && (
             <div className="w-full order-3">
-              <CurrentItemCard />
+              <CurrentItemCard roomId={getRoomLongId()} />
             </div>
           )}
         </div>

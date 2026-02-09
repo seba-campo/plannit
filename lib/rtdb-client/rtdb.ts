@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app"
 import { getDatabase, ref, onValue, set, get, remove, type Database, update, runTransaction } from "firebase/database"
 import { getAuth, signInAnonymously } from "firebase/auth"
+import { FirebaseRoom, FirebasePlayer } from "./DTOs"
+import { VotingCard } from "@/interfaces/VotingCard"
 
 // Firebase configuration - you should move these to environment variables
 const firebaseConfig = {
@@ -26,45 +28,15 @@ signInAnonymously(auth)
   })
   .catch((error) => {
     console.error("❌ Error al autenticar:", error)
-  })
-
-// Types for Firebase data structure
-export interface FirebasePlayer {
-  currentStatus: "spectator" | "player"
-  name: string,
-  uniqueId: string,
-  userType: "admin" | "player"
-  vote: number | null
-  hasVoted: boolean
-  lastSeen: number
-  isOnline: boolean
-  selection: number | null
-}
-
-export interface FirebaseRoom {
-  averageScore: number
-  currentRound: number
-  cardStatus: "hidden" | "revelaed"
-  isRevealed: boolean
-  createdAt: number
-  gameState: "waiting" | "revealed"
-  participants: Record<string, FirebasePlayer>
-}
-
-export interface RoomSession {
-  roomId: string
-  roomCode: string //Codigo de pocos digitos
-  playerId: string
-  playerName: string
-  playerType: "player" | "admin"
-  currentStatus: "player" | "spectator"
-}
+  });
 
 // Firebase service class
 export class FirebaseRoomService {
   private database: Database
   private roomRef: any = null
   private playersRef: any = null
+  private ticketRef: any = null
+  private ticketHistoryRef: any = null
   private unsubscribers: Array<() => void> = []
 
   constructor() {
@@ -117,6 +89,32 @@ export class FirebaseRoomService {
     this.playersRef = ref(this.database, `planningRooms/${roomId}/participants`)
 
     const unsubscribe = onValue(this.playersRef, (snapshot) => {
+      const data = snapshot.val() || {}
+      // console.log(data)
+      callback(data)
+    })
+
+    this.unsubscribers.push(unsubscribe)
+    return unsubscribe
+  }
+
+  subscribeToTickets(roomId:string, callback: (tickets: Array<VotingCard>) => void): () => void {
+    this.ticketRef = ref(this.database, `planningRooms/${roomId}/currentTicket`)
+
+    const unsubscribe = onValue(this.ticketRef, (snapshot) => {
+      const data = snapshot.val() || {}
+      // console.log(data)
+      callback(data)
+    })
+
+    this.unsubscribers.push(unsubscribe)
+    return unsubscribe
+  }
+
+  subscribeToTicketHistory(roomId:string, callback: (tickets: Array<VotingCard>) => void): () => void {
+    this.ticketHistoryRef = ref(this.database, `planningRooms/${roomId}/gameTicketHistory/tickets`)
+
+    const unsubscribe = onValue(this.ticketHistoryRef, (snapshot) => {
       const data = snapshot.val() || {}
       // console.log(data)
       callback(data)
@@ -250,6 +248,37 @@ export class FirebaseRoomService {
     await remove(playerRef);
   }
 
+  public async addCurrentVotingTicket(roomId: string, ticket: VotingCard): Promise<void> {
+    const currentTicketRef = ref(this.database, `planningRooms/${roomId}/currentTicket/0`);
+    const currentTicketSnap = await get(currentTicketRef);
+    if(!currentTicketSnap.exists()){
+      await set(currentTicketRef, ticket)
+    } else {
+      await this.pushTicketToHistory(roomId)
+      await set(currentTicketRef, ticket)
+    }
+  }
+
+  private async pushTicketToHistory(roomId: string): Promise<void> {
+    const ticketHistoryRef = ref(this.database, `planningRooms/${roomId}/gameTicketHistory/tickets`);
+    const currentTicketRef = ref(this.database, `planningRooms/${roomId}/currentTicket/0`);
+
+    const currentTicketSnapshot = await get(currentTicketRef);
+    if(!currentTicketSnapshot.exists()) return;
+
+    const currentTicket = currentTicketSnapshot.val() as VotingCard;
+    currentTicket.status = 'completed';
+    const historyTicketSnapshot = await get(ticketHistoryRef);
+    
+    if(!historyTicketSnapshot.exists()){
+      await set(ticketHistoryRef, currentTicket)
+    } else {
+      const history = historyTicketSnapshot.val() as Array<VotingCard>;
+      history.push(currentTicket);
+      await set(ticketHistoryRef, history)
+    }
+  }
+  
   // Clean up all subscriptions
   cleanup(): void {
     this.unsubscribers.forEach((unsubscribe) => unsubscribe())

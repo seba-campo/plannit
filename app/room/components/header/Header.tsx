@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RoomSession } from "@/lib/firebase";
+import { RoomSession } from "@/lib/rtdb-client/rtdb";
 import { LogOut, Wifi, WifiOff } from "lucide-react";
 import Link from "next/link";
 

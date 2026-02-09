@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff, RotateCcw, UserX } from "lucide-react";
 import cardValues from "../../[roomId]/utilsRoom";
 import { useRoomActions } from "../../[roomId]/hooks/useRoomActions";
-import { RoomSession } from "@/lib/firebase";
+import { RoomSession } from "@/lib/rtdb-client/rtdb";
 
 interface IGameBoard {
     roomSession: RoomSession | undefined;

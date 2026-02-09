@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Loader2, Users } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { apiClient, getErrorMessage, type JoinRoomResponse } from "@/lib/api"
+import { apiClient, getErrorMessage, type JoinRoomResponse } from "@/lib/api-client/api"
 
 type CachedSession = {
   roomCode: string

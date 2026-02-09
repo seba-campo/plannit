@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react"
-import { firebaseRoomService, type FirebaseRoom } from "@/lib/firebase"
+import { firebaseRoomService, type FirebaseRoom } from "@/lib/rtdb-client/rtdb"
 import { calculateAverage } from "@/utils/calculateAverage"
 import Player from "@/interfaces/Player"
 
@@ -56,6 +56,25 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         unsubscribeRef.current = [roomUnsubscribe, playersUnsubscribe]
     }, [])
 
+    const average = calculateAverage(players)
+    const allVoted = players.filter((p) => p.isOnline && p.currentStatus !== "spectator").every((player) => player.hasVoted)
+
+    const getActivePlayersCount = () => {
+        return players.filter((p) => p.isOnline && p.currentStatus !== "spectator").length
+    }
+
+    const getSpectatorsCount = () => {
+        return players.filter((p) => p.isOnline && p.currentStatus === "spectator").length
+    }
+
+    const getRoomLongId = () => {
+        const localRoomData = localStorage.getItem(`currentRoom`)
+        if (localRoomData) {
+            return JSON.parse(localRoomData).roomId;
+        }
+        return null
+    }
+
     useEffect(() => {
         let mounted = true;
         const initData = async () => {
@@ -98,17 +117,6 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         }
     }, [roomId, isSessionReady, setupRealtimeListeners])
 
-    const average = calculateAverage(players)
-    const allVoted = players.filter((p) => p.isOnline && p.currentStatus !== "spectator").every((player) => player.hasVoted)
-
-    const getActivePlayersCount = () => {
-        return players.filter((p) => p.isOnline && p.currentStatus !== "spectator").length
-    }
-
-    const getSpectatorsCount = () => {
-        return players.filter((p) => p.isOnline && p.currentStatus === "spectator").length
-    }
-
     return {
         players,
         roomData,
@@ -123,6 +131,7 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         allVoted,
         getActivePlayersCount,
         getSpectatorsCount,
+        getRoomLongId,
         dataError
     }
 }

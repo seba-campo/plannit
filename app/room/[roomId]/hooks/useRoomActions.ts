@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { firebaseRoomService, type RoomSession } from "@/lib/firebase"
+import { firebaseRoomService, type RoomSession } from "@/lib/rtdb-client/rtdb"
 
 export const useRoomActions = (roomSession: RoomSession | undefined, userStatus: "player" | "spectator") => {
     const [error, setError] = useState<string | null>(null)

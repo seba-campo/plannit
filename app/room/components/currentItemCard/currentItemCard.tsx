@@ -4,13 +4,19 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
 
-export default function CurrentItemCard() {
+interface CurrentItemCardProps {
+  roomId: string
+}
+
+export default function CurrentItemCard({ roomId }: CurrentItemCardProps) {
   const {
-    ticketUrl,
     isLoading,
     handleSubmitTicket,
-    setSubmittedTicketUrl
-  } = useCurrentItemCard();
+    setSubmittedTicketUrl,
+    setSubmittedTitle,
+    submittedTitle,
+    submittedTicketUrl,
+  } = useCurrentItemCard(roomId);
 
   return (
     <Card className="border-2 border-accent hover:border-primary transition-all duration-500 bg-accent/60 backdrop-blur-md tech-card-glow">
@@ -25,8 +31,9 @@ export default function CurrentItemCard() {
             <label htmlFor="name" className="text-sm text-muted-foreground">Title</label>
             <Input
               id="name"
-              placeholder="Ajustar placeholder"
-              onChange={(e) => setSubmittedTicketUrl(e.target.value)}
+              placeholder="Title of the ticket"
+              value={submittedTitle}
+              onChange={(e) => setSubmittedTitle(e.target.value)}
               disabled={isLoading}
               required
             />
@@ -36,6 +43,7 @@ export default function CurrentItemCard() {
             <Input
               id="url"
               placeholder="https://linear.app/issue/..."
+              value={submittedTicketUrl}
               onChange={(e) => setSubmittedTicketUrl(e.target.value)}
               disabled={isLoading}
               required
