@@ -131,11 +131,12 @@ export class FirebaseRoomService {
     if (!snapshot.exists()) return;
 
     const participants = snapshot.val();
-    const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
+    const entry = Object.entries(participants).find(([key, p]: any) => p.uniqueId === playerId);
 
-    if (index === -1) return;
+    if (!entry) return;
+    const [key] = entry;
 
-    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`);
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${key}`);
     await update(playerRef, {
       vote,
       hasVoted: true,
@@ -151,11 +152,12 @@ export class FirebaseRoomService {
     if (!snapshot.exists()) return;
 
     const participants = snapshot.val();
-    const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
+    const entry = Object.entries(participants).find(([key, p]: any) => p.uniqueId === playerId);
 
-    if (index === -1) return;
+    if (!entry) return;
+    const [key] = entry;
 
-    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`);
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${key}`);
     await update(playerRef, {
       isOnline,
       lastSeen: Date.now(),
@@ -231,9 +233,15 @@ export class FirebaseRoomService {
   async updatePlayerCurrentStatus(roomId: string, playerId: string, currentStatus: "spectator" | "player"): Promise<void> {
     const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`)
     const snapshot = await get(participantsRef);
+    if (!snapshot.exists()) return;
+
     const participants = snapshot.val();
-    const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
-    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`)
+    const entry = Object.entries(participants).find(([key, p]: any) => p.uniqueId === playerId);
+
+    if (!entry) return;
+    const [key] = entry;
+
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${key}`)
     await update(playerRef, { "currentStatus": currentStatus })
   }
 
@@ -243,8 +251,12 @@ export class FirebaseRoomService {
     if (!snapshot.exists()) return;
 
     const participants = snapshot.val();
-    const index = Object.values(participants).findIndex((p: any) => p.uniqueId === playerId);
-    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${index}`)
+    const entry = Object.entries(participants).find(([key, p]: any) => p.uniqueId === playerId);
+
+    if (!entry) return;
+    const [key] = entry;
+
+    const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${key}`)
     await remove(playerRef);
   }
 
