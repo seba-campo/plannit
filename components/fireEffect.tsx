@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useRef, useEffect } from "react";
 
 const CANVAS_HEIGHT_RATIO = 0.6; // 60% de la altura del contenedor
@@ -7,17 +9,16 @@ export default function FireEffect() {
   const animationRef = useRef<number | null>(null);
   const particlesRef = useRef<any[]>([]);
   const paletteBase = [
-    { r: 245, g: 167, b: 66 },    // Gold
-    { r: 232, g: 90, b: 25 },     // Orange
-    { r: 255, g: 62, b: 0 },      // Bright red-orange
-    { r: 191, g: 34, b: 34 },     // Deep red
-    { r: 80, g: 20, b: 70 }       // Purple shadow
+    { r: 255, g: 255, b: 180 }, // Amarillo claro
+    { r: 255, g: 200, b: 40 },  // Amarillo fuerte
+    { r: 255, g: 120, b: 0 },   // Naranja brillante
+    { r: 255, g: 62, b: 0 },    // Rojo-naranja
+    { r: 255, g: 255, b: 255 }  // Blanco para brillos
   ];
   const paletteRef = useRef([...paletteBase]);
   const timeRef = useRef(0);
   const lastUpdateTimeRef = useRef(0);
 
-  // Resize canvas to fit parent
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -40,10 +41,10 @@ export default function FireEffect() {
     if (!ctx) return;
     let running = true;
 
-    // Inicializar partículas
     function createParticles() {
       if (!canvas) return;
-      const particleCount = Math.floor((canvas.width * canvas.height) / 3000);
+      if (!canvas || canvas.width === 0 || canvas.height === 0) return;
+      const particleCount = Math.max(Math.floor((canvas.width * canvas.height) / 3000), 15);
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push({
           x: Math.random() * canvas.width,
@@ -80,20 +81,24 @@ export default function FireEffect() {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(rotation);
+      // Glow effect
+      ctx.shadowColor = `rgba(${color.r},${color.g},${color.b},${Math.max(opacity, 0.5)})`;
+      ctx.shadowBlur = size * 1.2;
       const gradient = ctx.createLinearGradient(0, -size, 0, size);
       gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},0)`);
       gradient.addColorStop(0.5, `rgba(${color.r},${color.g},${color.b},${opacity})`);
       gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b},0)`);
       ctx.fillStyle = gradient;
       ctx.beginPath();
-      ctx.moveTo(-size/3, -size);
-      ctx.quadraticCurveTo(size/2, 0, -size/3, size);
-      ctx.quadraticCurveTo(size/2, 0, size/3, -size/2);
+      ctx.moveTo(-size / 3, -size);
+      ctx.quadraticCurveTo(size / 2, 0, -size / 3, size);
+      ctx.quadraticCurveTo(size / 2, 0, size / 3, -size / 2);
       ctx.closePath();
       ctx.fill();
+      ctx.shadowBlur = 0; // Remove glow for next shapes
       ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${opacity * 0.7})`;
       ctx.beginPath();
-      ctx.ellipse(size/6, 0, size/4, size/2, 0, 0, Math.PI * 2);
+      ctx.ellipse(size / 6, 0, size / 4, size / 2, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }

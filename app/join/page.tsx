@@ -10,10 +10,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Loader2, Users } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { apiClient, getErrorMessage, type JoinRoomResponse } from "@/lib/api"
-import { useRoomExitGuard } from "../room/[roomId]/useExitRoom"
+import { apiClient, getErrorMessage, type JoinRoomResponse } from "@/lib/api-client/api"
 
-type CachedSession = { 
+type CachedSession = {
   roomCode: string
 }
 
@@ -24,16 +23,15 @@ export default function JoinRoom() {
   const [error, setError] = useState<string | null>(null)
   const [roomData, setRoomData] = useState<JoinRoomResponse | null>(null)
   const router = useRouter();
-  
-  useRoomExitGuard()
+
   //Validar si viene el codigo por una redirección directa del /room
   useEffect(() => {
     const storage = localStorage.getItem("cachedRoomCode");
-    if(!storage)return
+    if (!storage) return
 
-    const session : CachedSession = JSON.parse(storage);
+    const session: CachedSession = JSON.parse(storage);
     setRoomCode(session.roomCode)
-  }, []);  
+  }, []);
 
   const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,7 +41,7 @@ export default function JoinRoom() {
     try {
       const response = await apiClient.joinRoom({
         roomId: roomCode.trim().toUpperCase(),
-        userName: {name: yourName.trim()}
+        userName: { name: yourName.trim() }
       })
 
       setRoomData(response)

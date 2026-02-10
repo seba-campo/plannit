@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Copy, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { apiClient, getErrorMessage, type CreateRoomResponse } from "@/lib/api"
+import { apiClient, getErrorMessage, type CreateRoomResponse } from "@/lib/api-client/api"
 
 export default function CreateRoom() {
   const [yourName, setYourName] = useState("")
@@ -27,7 +27,7 @@ export default function CreateRoom() {
 
     try {
       const response = await apiClient.createRoom({
-        userData: {name: yourName.trim()}
+        userData: { name: yourName.trim() }
       })
 
       setRoomData(response)
@@ -194,7 +194,7 @@ export default function CreateRoom() {
               <Button
                 className="w-full"
                 onClick={handleCreateRoom}
-                disabled={isLoading  || !yourName.trim()}
+                disabled={isLoading || !yourName.trim()}
               >
                 {isLoading ? (
                   <>
