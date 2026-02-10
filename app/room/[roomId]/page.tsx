@@ -103,8 +103,6 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
           <div className="w-full order-2 lg:order-1">
             <CurrentItemBanner
               roomId={getRoomLongId()}
-              currentCard={undefined}
-              history={[]}
             />
           </div>
 
@@ -117,6 +115,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
                 isCreator={isCreator}
                 handleUserTypeToggle={() => handleUserTypeToggle(setUserStatus)}
                 isUpdatingUserType={isUpdatingUserType}
+                isRevealed={revealed}
               />
             )}
 
@@ -127,6 +126,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
               userRole={userRole}
               userStatus={userStatus}
               currentPlayerVote={getCurrentPlayerVote() ?? null}
+              average={parseInt(average)}
               atLeastOnePlayerVoted={atLeastOnePlayerVoted}
               setUserStatus={setUserStatus}
             />

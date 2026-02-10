@@ -37,6 +37,7 @@ export class FirebaseRoomService {
   private playersRef: any = null
   private ticketRef: any = null
   private ticketHistoryRef: any = null
+  private averageScoreRef: any = null
   private unsubscribers: Array<() => void> = []
 
   constructor() {
@@ -44,7 +45,7 @@ export class FirebaseRoomService {
   }
 
   // Initialize connection to a specific room
-  initializeRoom(roomId: string): Promise<FirebaseRoom | null> {
+  public async initializeRoom(roomId: string): Promise<FirebaseRoom | null> {
     return new Promise((resolve, reject) => {
       try {
         this.roomRef = ref(this.database, `planningRooms/${roomId}`)
@@ -72,7 +73,7 @@ export class FirebaseRoomService {
   }
 
   // Listen for real-time room updates
-  subscribeToRoom(roomId: string, callback: (room: FirebaseRoom | null) => void): () => void {
+  public subscribeToRoom(roomId: string, callback: (room: FirebaseRoom | null) => void): () => void {
     this.roomRef = ref(this.database, `planningRooms/${roomId}`)
 
     const unsubscribe = onValue(this.roomRef, (snapshot) => {
@@ -98,7 +99,19 @@ export class FirebaseRoomService {
     return unsubscribe
   }
 
-  subscribeToTickets(roomId:string, callback: (tickets: Array<VotingCard>) => void): () => void {
+  public subscribeToAverageScore(roomId: string, callback: (averageScore: number) => void): () => void {
+    this.averageScoreRef = ref(this.database, `planningRooms/${roomId}/averageScore`)
+
+    const unsubscribe = onValue(this.averageScoreRef, (snapshot) => {
+      const data = snapshot.val() || 0
+      callback(data)
+    })
+
+    this.unsubscribers.push(unsubscribe)
+    return unsubscribe
+  }
+
+  public subscribeToTickets(roomId: string, callback: (tickets: Array<VotingCard>) => void): () => void {
     this.ticketRef = ref(this.database, `planningRooms/${roomId}/currentTicket`)
 
     const unsubscribe = onValue(this.ticketRef, (snapshot) => {
@@ -111,7 +124,7 @@ export class FirebaseRoomService {
     return unsubscribe
   }
 
-  subscribeToTicketHistory(roomId:string, callback: (tickets: Array<VotingCard>) => void): () => void {
+  public subscribeToTicketHistory(roomId: string, callback: (tickets: Array<VotingCard>) => void): () => void {
     this.ticketHistoryRef = ref(this.database, `planningRooms/${roomId}/gameTicketHistory/tickets`)
 
     const unsubscribe = onValue(this.ticketHistoryRef, (snapshot) => {
@@ -125,7 +138,7 @@ export class FirebaseRoomService {
   }
 
   // Update player's vote
-  async updatePlayerVote(roomId: string, playerId: string, vote: string): Promise<void> {
+  public async updatePlayerVote(roomId: string, playerId: string, vote: string): Promise<void> {
     const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`);
     const snapshot = await get(participantsRef);
     if (!snapshot.exists()) return;
@@ -145,7 +158,7 @@ export class FirebaseRoomService {
   }
 
   // Update player's online status
-  async updatePlayerStatus(roomId: string, playerId: string, isOnline: boolean): Promise<void> {
+  public async updatePlayerStatus(roomId: string, playerId: string, isOnline: boolean): Promise<void> {
     const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`);
     const snapshot = await get(participantsRef);
 
@@ -165,14 +178,23 @@ export class FirebaseRoomService {
   }
 
   // Reveal all votes
-  async revealVotes(roomId: string): Promise<void> {
-    const gameStateRef = ref(this.database, `planningRooms/${roomId}/gameState`)
-    const isRevealedRef = ref(this.database, `planningRooms/${roomId}/isRevealed`)
+  public async revealVotes(roomId: string, average: number): Promise<void> {
+    const gameStateRef = ref(this.database, `planningRooms/${roomId}/gameState`);
+    const isRevealedRef = ref(this.database, `planningRooms/${roomId}/isRevealed`);
 
+    await this.setAverageScore(roomId, average);
     await Promise.all([update(gameStateRef, { "gameState": "revealed" }), update(isRevealedRef, { "isRevealed": true })])
   }
 
-  async addOneToCurrentRound(roomId: string): Promise<void> {
+  public async setAverageScore(roomId: string, average: number): Promise<void> {
+    if (!roomId) return;
+    const averageRef = ref(this.database, `planningRooms/${roomId}/averageScore`);
+    await runTransaction(averageRef, (currentAverage) => {
+      return average as number;
+    })
+  }
+
+  public async addOneToCurrentRound(roomId: string): Promise<void> {
     const currentRoundRef = ref(this.database, `planningRooms/${roomId}/currentRound`)
     try {
       await runTransaction(currentRoundRef, (currentRound) => {
@@ -185,7 +207,7 @@ export class FirebaseRoomService {
   }
 
   // Reset votes for new round
-  async resetVotes(roomId: string): Promise<void> {
+  public async resetVotes(roomId: string): Promise<void> {
     const updates: Record<string, any> = {}
 
     // Get current players and reset their votes
@@ -220,7 +242,7 @@ export class FirebaseRoomService {
   }
 
   // Join room as a player
-  async joinRoom(roomId: string, playerData: Omit<FirebasePlayer, "lastSeen" | "isOnline">): Promise<void> {
+  public async joinRoom(roomId: string, playerData: Omit<FirebasePlayer, "lastSeen" | "isOnline">): Promise<void> {
     const playerRef = ref(this.database, `planningRooms/${roomId}/participants/${playerData.uniqueId}`)
     await set(playerRef, {
       ...playerData,
@@ -230,7 +252,7 @@ export class FirebaseRoomService {
   }
 
   // Update player's current status (spectator/player)
-  async updatePlayerCurrentStatus(roomId: string, playerId: string, currentStatus: "spectator" | "player"): Promise<void> {
+  public async updatePlayerCurrentStatus(roomId: string, playerId: string, currentStatus: "spectator" | "player"): Promise<void> {
     const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`)
     const snapshot = await get(participantsRef);
     if (!snapshot.exists()) return;
@@ -245,7 +267,7 @@ export class FirebaseRoomService {
     await update(playerRef, { "currentStatus": currentStatus })
   }
 
-  async removePlayer(roomId: string, playerId: string): Promise<void> {
+  public async removePlayer(roomId: string, playerId: string): Promise<void> {
     const participantsRef = ref(this.database, `planningRooms/${roomId}/participants`)
     const snapshot = await get(participantsRef);
     if (!snapshot.exists()) return;
@@ -263,7 +285,7 @@ export class FirebaseRoomService {
   public async addCurrentVotingTicket(roomId: string, ticket: VotingCard): Promise<void> {
     const currentTicketRef = ref(this.database, `planningRooms/${roomId}/currentTicket/0`);
     const currentTicketSnap = await get(currentTicketRef);
-    if(!currentTicketSnap.exists()){
+    if (!currentTicketSnap.exists()) {
       await set(currentTicketRef, ticket)
     } else {
       await this.pushTicketToHistory(roomId)
@@ -271,26 +293,38 @@ export class FirebaseRoomService {
     }
   }
 
+  public async clearCurrentTicket(roomId: string): Promise<void> {
+    await this.pushTicketToHistory(roomId)
+    const currentTicketRef = ref(this.database, `planningRooms/${roomId}/currentTicket/0`);
+    await set(currentTicketRef, null)
+  }
+
   private async pushTicketToHistory(roomId: string): Promise<void> {
     const ticketHistoryRef = ref(this.database, `planningRooms/${roomId}/gameTicketHistory/tickets`);
     const currentTicketRef = ref(this.database, `planningRooms/${roomId}/currentTicket/0`);
+    const currentAverageScoreRef = ref(this.database, `planningRooms/${roomId}/averageScore`);
 
     const currentTicketSnapshot = await get(currentTicketRef);
-    if(!currentTicketSnapshot.exists()) return;
+    const currentAverageScoreSnapshot = await get(currentAverageScoreRef);
+    if (!currentTicketSnapshot.exists()) return;
 
     const currentTicket = currentTicketSnapshot.val() as VotingCard;
     currentTicket.status = 'completed';
+    currentTicket.averageValue = currentAverageScoreSnapshot.val() as number;
     const historyTicketSnapshot = await get(ticketHistoryRef);
-    
-    if(!historyTicketSnapshot.exists()){
-      await set(ticketHistoryRef, currentTicket)
+
+    if (!historyTicketSnapshot.exists()) {
+      await set(ticketHistoryRef, [currentTicket])
     } else {
-      const history = historyTicketSnapshot.val() as Array<VotingCard>;
+      let history = historyTicketSnapshot.val();
+      if (!Array.isArray(history)) {
+        history = [history];
+      }
       history.push(currentTicket);
       await set(ticketHistoryRef, history)
     }
   }
-  
+
   // Clean up all subscriptions
   cleanup(): void {
     this.unsubscribers.forEach((unsubscribe) => unsubscribe())

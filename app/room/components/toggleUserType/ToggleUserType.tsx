@@ -7,13 +7,15 @@ interface IToggleUserType {
     handleUserTypeToggle: () => void;
     isUpdatingUserType: boolean;
     isCreator: () => boolean;
+    isRevealed: boolean;
 }
 
 const ToggleUserType = ({
     isSpectator,
     handleUserTypeToggle,
     isUpdatingUserType,
-    isCreator
+    isCreator,
+    isRevealed
 }: IToggleUserType) => {
     return (
         <Card className="mb-4 bg-accent/50 border-accent">
@@ -29,7 +31,7 @@ const ToggleUserType = ({
                     </div>
                     <Button
                         onClick={handleUserTypeToggle}
-                        disabled={isUpdatingUserType}
+                        disabled={isUpdatingUserType || isRevealed}
                         variant={isSpectator() ? "default" : "outline"}
                         className="w-full sm:w-auto"
                     >

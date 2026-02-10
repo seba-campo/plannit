@@ -1,32 +1,27 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { VotingCard } from "@/interfaces/VotingCard"
 import useCurrentItemBanner from "./useCurrentItemBanner"
 import HistoryCard from "./components/HistoryCard"
-import { Badge } from "@/components/ui/badge"
-import { ExternalLink, Clock } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Clock } from "lucide-react"
 
 interface CurrentItemBannerProps {
     roomId: string
-    currentCard?: VotingCard
-    history?: VotingCard[]
 }
 
 export default function CurrentItemBanner({
     roomId,
-    currentCard: propCurrentCard,
-    history: propHistory = []
 
 }: CurrentItemBannerProps) {
-    const { 
-        currentCard: hookCurrentCard, 
-        history: hookHistory, 
+    const {
+        currentCard: hookCurrentCard,
+        history: hookHistory,
+        averageScore: hookAverageScore,
     } = useCurrentItemBanner(roomId)
 
-    const currentCard = propCurrentCard || hookCurrentCard
-    const history = propHistory.length > 0 ? propHistory : hookHistory
+    const currentCard = hookCurrentCard
+    const history = hookHistory;
+    const averageScore = hookAverageScore ?? undefined;
 
     return (
         <Card className="border-accent transition-all bg-accent/50 backdrop-blur-md rounded-lg border text-card-foreground shadow-sm bg">
@@ -39,18 +34,18 @@ export default function CurrentItemBanner({
             <CardContent className="space-y-4">
                 {/* Current Voting Card */}
                 {currentCard ? (
-                    <HistoryCard card={currentCard} isHistory={false} />
+                    <HistoryCard card={currentCard} isHistory={false} votingValue={averageScore} />
                 ) : (
                     <div className="p-8 text-center rounded-lg border-2 border-dashed border-muted">
                         <Clock className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
                         <p className="text-muted-foreground text-sm">
-                            Nothing here... yet
+                            Actually voting... well, nothing :/
                         </p>
                     </div>
                 )}
 
                 {/* History Section */}
-                {history && history.length > 0 && (
+                {history && history.filter(h => h.id).length > 0 && (
                     <div className="space-y-3 pt-2">
                         <div className="flex items-center gap-2">
                             <div className="h-px flex-1 bg-border" />
@@ -61,8 +56,8 @@ export default function CurrentItemBanner({
                         </div>
 
                         <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
-                            {history.map((card) => (
-                                <HistoryCard key={card.id} card={card} isHistory={true} />
+                            {history.filter(h => h.id).map((card) => (
+                                <HistoryCard key={card.id} card={card} isHistory={true} votingValue={card.averageValue} />
                             ))}
                         </div>
                     </div>

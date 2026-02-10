@@ -7,9 +7,10 @@ import useCurrentItemBanner from "../useCurrentItemBanner";
 interface HistoryCardProps {
     card: VotingCard
     isHistory?: boolean
+    votingValue?: number
 }
 
-const HistoryCard = ({ card, isHistory = false }: HistoryCardProps) => {
+const HistoryCard = ({ card, isHistory = false, votingValue }: HistoryCardProps) => {
     const { getStatusIcon, getStatusColor } = useCurrentItemBanner()
 
     return (
@@ -23,7 +24,7 @@ const HistoryCard = ({ card, isHistory = false }: HistoryCardProps) => {
             )}
         >
             {/* Status Badge */}
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 cursor-pointer">
                 <Badge
                     className={cn(
                         "flex items-center gap-1.5 px-2.5 py-1 border",
@@ -37,14 +38,14 @@ const HistoryCard = ({ card, isHistory = false }: HistoryCardProps) => {
                 </Badge>
 
                 {/* Voting Value */}
-                {card.votingValue !== null && (
+                {votingValue !== null && (
                     <div className={cn(
                         "flex items-center justify-center h-8 w-8 rounded-full font-bold text-sm",
                         isHistory
                             ? "bg-muted text-muted-foreground"
                             : "bg-primary/20 text-primary border border-primary/30"
                     )}>
-                        {card.averageValue}
+                        {votingValue}
                     </div>
                 )}
             </div>

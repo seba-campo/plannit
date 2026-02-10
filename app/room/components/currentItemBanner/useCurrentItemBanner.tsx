@@ -28,12 +28,13 @@ export const getStatusColor = (status: VotingCard["status"]) => {
 const useCurrentItemBanner = (roomId?: string) => {
     const [currentCard, setCurrentCard] = useState<VotingCard | null>(null)
     const [history, setHistory] = useState<VotingCard[] | null>(null)
+    const [averageScore, setAverageScore] = useState<number | null>(null)
 
     useEffect(() => {
         if (!roomId) return;
 
         const rtdb = new FirebaseRoomService();
-        
+
         const unsubscribeTickets = rtdb.subscribeToTickets(roomId, (tickets) => {
             if (Array.isArray(tickets) && tickets.length > 0) {
                 setCurrentCard(tickets[0])
@@ -42,13 +43,24 @@ const useCurrentItemBanner = (roomId?: string) => {
             }
         });
 
-        const unsubscribeHistory = rtdb.subscribeToTicketHistory(roomId, (history) => {
+        const unsubscribeHistory = rtdb.subscribeToTicketHistory(roomId, (historyData) => {
+            console.log(historyData)
+            let history = historyData;
+            if (history && !Array.isArray(history)) {
+                history = [history];
+            }
             setHistory(Array.isArray(history) ? history : null)
+        });
+
+        const unsubscribeAverageScore = rtdb.subscribeToAverageScore(roomId, (averageScoreData) => {
+            console.log(averageScoreData)
+            setAverageScore(averageScoreData)
         });
 
         return () => {
             unsubscribeTickets();
             unsubscribeHistory();
+            unsubscribeAverageScore();
             rtdb.cleanup();
         };
     }, [roomId]);
@@ -56,6 +68,7 @@ const useCurrentItemBanner = (roomId?: string) => {
     return {
         currentCard,
         history,
+        averageScore,
         getStatusIcon,
         getStatusColor
     }

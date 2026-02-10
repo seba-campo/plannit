@@ -12,6 +12,7 @@ interface IGameBoard {
     revealed: boolean;
     userRole: "admin" | "player";
     userStatus: "player" | "spectator";
+    average: number;
     currentPlayerVote: string | null;
     atLeastOnePlayerVoted: boolean;
     setUserStatus: (status: "player" | "spectator") => void;
@@ -22,6 +23,7 @@ const GameBoard = ({
     revealed,
     userRole,
     userStatus,
+    average,
     currentPlayerVote,
     atLeastOnePlayerVoted,
     setUserStatus,
@@ -70,7 +72,7 @@ const GameBoard = ({
                             </Button>
                             <Button
                                 variant="outline"
-                                onClick={() => handleReveal(true, revealed)}
+                                onClick={() => handleReveal(true, revealed, average)}
                                 disabled={isRevealDisabled}
                                 className="flex-1 sm:flex-none"
                             >

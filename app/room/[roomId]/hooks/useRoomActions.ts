@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { firebaseRoomService, type RoomSession } from "@/lib/rtdb-client/rtdb"
+import { Average } from "next/font/google"
 
 export const useRoomActions = (roomSession: RoomSession | undefined, userStatus: "player" | "spectator") => {
     const [error, setError] = useState<string | null>(null)
@@ -17,10 +18,10 @@ export const useRoomActions = (roomSession: RoomSession | undefined, userStatus:
         }
     }
 
-    const handleReveal = async (isCreator: boolean, revealed: boolean) => {
+    const handleReveal = async (isCreator: boolean, revealed: boolean, average: number) => {
         if (!roomSession || !isCreator || revealed) return
         try {
-            await firebaseRoomService.revealVotes(roomSession.roomId)
+            await firebaseRoomService.revealVotes(roomSession.roomId, average)
         } catch (err) {
             setError("Failed to reveal votes")
         }
@@ -31,6 +32,8 @@ export const useRoomActions = (roomSession: RoomSession | undefined, userStatus:
         try {
             await firebaseRoomService.resetVotes(roomSession.roomId)
             await firebaseRoomService.addOneToCurrentRound(roomSession.roomId)
+            await firebaseRoomService.clearCurrentTicket(roomSession.roomId)
+            await firebaseRoomService.setAverageScore(roomSession.roomId, 0)
         } catch (err) {
             setError("Failed to reset votes")
         }
