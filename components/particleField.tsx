@@ -198,8 +198,8 @@ export default function ParticleField() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0 }}
+      className="fixed inset-0 pointer-events-none animate-[fadeIn_0.2s_ease-out_forwards]"
+      style={{ zIndex: 0, opacity: 0 }}
       aria-hidden="true"
     />
   )
