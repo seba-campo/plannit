@@ -1,139 +1,305 @@
 "use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight, Plus, Users } from "lucide-react"
+import { ArrowRight, Plus, Users, Zap, Shield, BarChart3, Clock } from "lucide-react"
+import ParticleField from "@/components/particleField"
+import { useEffect, useRef, useState } from "react"
 
+function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const [count, setCount] = useState(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  const hasAnimated = useRef(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
+          const duration = 1500
+          const start = performance.now()
+          const step = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1)
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setCount(Math.floor(eased * target))
+            if (progress < 1) requestAnimationFrame(step)
+          }
+          requestAnimationFrame(step)
+        }
+      },
+      { threshold: 0.5 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [target])
+
+  return (
+    <span ref={ref}>
+      {count}
+      {suffix}
+    </span>
+  )
+}
+
+function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ElementType
+  title: string
+  description: string
+}) {
+  return (
+    <div className="group relative flex flex-col gap-3 rounded-xl border border-accent bg-card/40 p-6 backdrop-blur-sm transition-all duration-500 hover:border-[rgba(0,255,255,0.3)] hover:bg-card/60">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
+        <Icon className="h-5 w-5 text-[rgb(0,255,255)]" />
+      </div>
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+      <div className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ boxShadow: "0 0 30px rgba(0,255,255,0.05), 0 0 60px rgba(59,130,246,0.03)" }} />
+    </div>
+  )
+}
+
+function StepCard({ number, title, description }: { number: string; title: string; description: string }) {
+  return (
+    <div className="flex flex-col items-center gap-3 text-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(0,255,255,0.3)] bg-accent text-lg font-bold text-[rgb(0,255,255)]">
+        {number}
+      </div>
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+    </div>
+  )
+}
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Neon Tech Background */}
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Background layers */}
+      <div className="fixed inset-0 -z-20 bg-background" />
       <div className="fixed inset-0 -z-10">
-        {/* Base gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950/30 to-slate-950"></div>
-
-        {/* Tech grid overlay */}
-        <div className="tech-grid"></div>
-
-        {/* Neon elements */}
-        <div className="absolute inset-0">
-          {/* Circuit lines */}
-          <div className="circuit-lines">
-            <div className="circuit-line circuit-line-1"></div>
-            <div className="circuit-line circuit-line-2"></div>
-            <div className="circuit-line circuit-line-3"></div>
-          </div>
-
-          {/* Hexagonal elements */}
-          <div className="hex-container">
-            <div className="hex-element hex-1"></div>
-            <div className="hex-element hex-2"></div>
-            <div className="hex-element hex-3"></div>
-          </div>
-
-          {/* Neon orbs */}
-          <div className="neon-orb neon-orb-1"></div>
-          <div className="neon-orb neon-orb-2"></div>
-
-          {/* Data nodes */}
-          <div className="data-nodes">
-            <div className="data-node node-1"></div>
-            <div className="data-node node-2"></div>
-            <div className="data-node node-3"></div>
-            <div className="data-node node-4"></div>
-          </div>
-
-          {/* Connection lines */}
-          <div className="connection-lines">
-            <div className="connection-line conn-1"></div>
-            <div className="connection-line conn-2"></div>
-            <div className="connection-line conn-3"></div>
-          </div>
-
-          {/* Scanning line */}
-          <div className="scan-line"></div>
-        </div>
+        <div className="tech-grid" />
       </div>
+      <ParticleField />
 
-      <header className="border-b border-accent py-4 relative z-10 bg-background/90 backdrop-blur-md">
-        <div className="container mx-auto px-4">
-          <h1 className="text-2xl font-bold text-primary">PlannIt</h1>
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-accent/50 bg-background/80 backdrop-blur-lg">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
+          <h1 className="text-2xl font-bold text-[rgb(0,255,255)]">PlannIt</h1>
+          <nav className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground"
+              asChild
+            >
+              <Link href="/join">Join Room</Link>
+            </Button>
+            <Button
+              size="sm"
+              className="bg-[rgb(0,255,255)] text-background hover:bg-[rgb(0,220,220)]"
+              asChild
+            >
+              <Link href="/create">
+                Create Room
+                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </nav>
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4 relative z-10">
-        <div className="max-w-3xl w-full">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-white via-cyan-200 to-blue-200 bg-clip-text text-transparent">
-              Estimate together, decide faster
+      {/* Hero Section */}
+      <section className="relative z-10 flex min-h-[85vh] flex-col items-center justify-center px-4 py-20">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-accent bg-accent/50 px-4 py-1.5 text-xs font-medium text-[rgb(0,255,255)] backdrop-blur-sm">
+            <Zap className="h-3 w-3" />
+            Agile estimation for modern teams
+          </div>
+
+          <h2 className="text-balance text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
+            Estimate together,{" "}
+            <span className="text-[rgb(0,255,255)]">
+              decide faster
+            </span>
+          </h2>
+
+          <p className="max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+            The real-time planning poker tool that helps agile teams align on complexity,
+            eliminate bias, and ship with confidence.
+          </p>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+            <Button
+              size="lg"
+              className="group bg-[rgb(0,255,255)] px-8 text-background hover:bg-[rgb(0,220,220)] hover:shadow-lg hover:shadow-[rgba(0,255,255,0.2)]"
+              asChild
+            >
+              <Link href="/create">
+                <Plus className="mr-2 h-4 w-4" />
+                Create a Room
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="group border-accent bg-card/30 px-8 text-foreground backdrop-blur-sm hover:border-[rgba(0,255,255,0.3)] hover:bg-card/50"
+              asChild
+            >
+              <Link href="/join">
+                <Users className="mr-2 h-4 w-4" />
+                Join Existing Room
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Bar */}
+      <section className="relative z-10 border-y border-accent/50 bg-card/30 backdrop-blur-md">
+        <div className="container mx-auto grid grid-cols-2 gap-6 px-4 py-10 md:grid-cols-4 md:gap-8">
+          {[
+            { value: 100, suffix: "%", label: "Free to use" },
+            { value: 0, suffix: "", label: "Setup required", display: "Zero" },
+            { value: 50, suffix: "ms", label: "Real-time sync" },
+            { value: 8, suffix: "+", label: "Card systems" },
+          ].map((stat) => (
+            <div key={stat.label} className="flex flex-col items-center gap-1 text-center">
+              <span className="text-3xl font-bold text-[rgb(0,255,255)] md:text-4xl">
+                {stat.display ?? <AnimatedCounter target={stat.value} suffix={stat.suffix} />}
+              </span>
+              <span className="text-sm text-muted-foreground">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="relative z-10 px-4 py-20 md:py-28">
+        <div className="container mx-auto max-w-5xl">
+          <div className="mb-14 flex flex-col items-center gap-3 text-center">
+            <span className="text-xs font-medium uppercase tracking-widest text-[rgb(0,255,255)]">
+              Features
+            </span>
+            <h2 className="text-balance text-3xl font-bold text-foreground sm:text-4xl">
+              Everything your team needs
             </h2>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              A simple, effective way for agile teams to estimate and plan their work
+            <p className="max-w-lg text-muted-foreground">
+              Built for speed, designed for clarity. PlannIt streamlines your sprint planning workflow.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="border-2 border-accent hover:border-primary transition-all duration-500 bg-accent/60 backdrop-blur-md tech-card-glow">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Plus className="mr-2 h-5 w-5" />
-                  Create Room
-                </CardTitle>
-                <CardDescription>Start a new planning session as a moderator</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Create a new room where you can invite your team members to join and start estimating tasks together.
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  className="w-full group hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300"
-                  asChild
-                >
-                  <Link href="/create">
-                    Create a new room
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-
-            <Card className="border-2 border-accent hover:border-primary transition-all duration-500 bg-accent/60 backdrop-blur-md tech-card-glow">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="mr-2 h-5 w-5" />
-                  Join Room
-                </CardTitle>
-                <CardDescription>Join an existing planning session</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Enter a room code to join your team's planning poker session and participate in the estimation
-                  process.
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  className="w-full group hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 bg-transparent"
-                  variant="outline"
-                  asChild
-                >
-                  <Link href="/join">
-                    Join existing room
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <FeatureCard
+              icon={Zap}
+              title="Real-Time Voting"
+              description="All votes sync instantly. See your team align in real time without any delays."
+            />
+            <FeatureCard
+              icon={Shield}
+              title="Bias-Free Estimation"
+              description="Votes remain hidden until revealed, preventing anchoring bias and ensuring honest estimates."
+            />
+            <FeatureCard
+              icon={BarChart3}
+              title="Instant Analytics"
+              description="Average, median, and distribution shown automatically when cards are revealed."
+            />
+            <FeatureCard
+              icon={Users}
+              title="Observer Mode"
+              description="Stakeholders can watch without voting, keeping sessions focused and efficient."
+            />
+            <FeatureCard
+              icon={Clock}
+              title="Session History"
+              description="Review past estimations to track patterns and improve accuracy over time."
+            />
+            <FeatureCard
+              icon={Plus}
+              title="Custom Card Sets"
+              description="Fibonacci, T-shirt sizes, or create your own. Adapt to your team's workflow."
+            />
           </div>
         </div>
-      </main>
+      </section>
 
-      <footer className="border-t border-accent py-6 relative z-10 bg-background/90 backdrop-blur-md">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Planning Poker. All rights reserved.</p>
+      {/* How It Works */}
+      <section className="relative z-10 border-y border-accent/50 bg-card/20 px-4 py-20 backdrop-blur-sm md:py-28">
+        <div className="container mx-auto max-w-4xl">
+          <div className="mb-14 flex flex-col items-center gap-3 text-center">
+            <span className="text-xs font-medium uppercase tracking-widest text-[rgb(0,255,255)]">
+              How It Works
+            </span>
+            <h2 className="text-balance text-3xl font-bold text-foreground sm:text-4xl">
+              Up and running in seconds
+            </h2>
+          </div>
+
+          <div className="grid gap-10 sm:grid-cols-3 sm:gap-6">
+            <StepCard
+              number="1"
+              title="Create a Room"
+              description="Start a new session and get a unique room code to share with your team."
+            />
+            <StepCard
+              number="2"
+              title="Invite Your Team"
+              description="Share the code. Team members join instantly from any device, no signup needed."
+            />
+            <StepCard
+              number="3"
+              title="Start Estimating"
+              description="Add items, vote together, reveal results, and reach consensus as a team."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="relative z-10 px-4 py-20 md:py-28">
+        <div className="container mx-auto max-w-2xl text-center">
+          <h2 className="mb-4 text-balance text-3xl font-bold text-foreground sm:text-4xl">
+            Ready to plan smarter?
+          </h2>
+          <p className="mb-8 text-muted-foreground">
+            No signup, no installation. Create a room and start estimating in seconds.
+          </p>
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <Button
+              size="lg"
+              className="group bg-[rgb(0,255,255)] px-8 text-background hover:bg-[rgb(0,220,220)] hover:shadow-lg hover:shadow-[rgba(0,255,255,0.2)]"
+              asChild
+            >
+              <Link href="/create">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-accent bg-card/30 px-8 text-foreground backdrop-blur-sm hover:border-[rgba(0,255,255,0.3)] hover:bg-card/50"
+              asChild
+            >
+              <Link href="/join">
+                Join a Room
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-accent/50 bg-background/80 backdrop-blur-md">
+        <div className="container mx-auto flex flex-col items-center gap-4 px-4 py-8 sm:flex-row sm:justify-between">
+          <span className="text-sm font-semibold text-[rgb(0,255,255)]">PlannIt</span>
+          <p className="text-xs text-muted-foreground">
+            {"© "}{new Date().getFullYear()}{" PlannIt. Built for agile teams."}
+          </p>
         </div>
       </footer>
     </div>
