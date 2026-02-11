@@ -309,8 +309,8 @@ export default function LandingPage() {
       <footer className="relative z-10 border-t border-accent/50 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex flex-col items-center gap-4 px-4 py-8 sm:flex-row sm:justify-between">
           <span className="text-sm font-semibold text-[rgb(0,255,255)]">PlannIt</span>
-          <p className="text-xs text-muted-foreground">
-            {"© "}{new Date().getFullYear()}{" PlannIt. Built for agile teams."}
+          <p className="text-xs text-muted-foreground cursor-pointer" onClick={() => window.open("https://sebacampo.vercel.app/", "_blank")}>
+            {"© "}{new Date().getFullYear()}{" Made with ❤️ by sCampo"}
           </p>
         </div>
       </footer>
