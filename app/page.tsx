@@ -171,12 +171,11 @@ export default function LandingPage() {
 
       {/* Stats Bar */}
       <section className="relative z-10 border-y border-accent/50 bg-card/30 backdrop-blur-md">
-        <div className="container mx-auto grid grid-cols-2 gap-6 px-4 py-10 md:grid-cols-4 md:gap-8">
+        <div className="container mx-auto grid grid-cols-2 gap-6 px-4 py-10 md:grid-cols-3 md:gap-8">
           {[
             { value: 100, suffix: "%", label: "Free to use" },
             { value: 0, suffix: "", label: "Setup required", display: "Zero" },
             { value: 50, suffix: "ms", label: "Real-time sync" },
-            { value: 8, suffix: "+", label: "Card systems" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col items-center gap-1 text-center">
               <span className="text-3xl font-bold text-[rgb(0,255,255)] md:text-4xl">
