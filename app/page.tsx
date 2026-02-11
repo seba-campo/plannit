@@ -45,19 +45,30 @@ function FeatureCard({
   icon: Icon,
   title,
   description,
+  comingSoon = false,
 }: {
   icon: React.ElementType
   title: string
   description: string
+  comingSoon?: boolean
 }) {
   return (
-    <div className="group relative flex flex-col gap-3 rounded-xl border border-accent bg-card/40 p-6 backdrop-blur-sm transition-all duration-500 hover:border-[rgba(0,255,255,0.3)] hover:bg-card/60">
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
-        <Icon className="h-5 w-5 text-[rgb(0,255,255)]" />
+    <div className={`group relative flex flex-col gap-3 rounded-xl border p-6 backdrop-blur-sm transition-all duration-500 ${comingSoon ? "border-accent/40 bg-card/20 opacity-60" : "border-accent bg-card/40 hover:border-[rgba(0,255,255,0.3)] hover:bg-card/60"}`}>
+      <div className="flex items-center gap-3">
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${comingSoon ? "bg-accent/50" : "bg-accent"}`}>
+          <Icon className={`h-5 w-5 ${comingSoon ? "text-[rgba(0,255,255,0.5)]" : "text-[rgb(0,255,255)]"}`} />
+        </div>
+        {comingSoon && (
+          <span className="rounded-full border border-[rgba(0,255,255,0.2)] bg-[rgba(0,255,255,0.05)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[rgba(0,255,255,0.6)]">
+            Coming soon
+          </span>
+        )}
       </div>
-      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-      <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
-      <div className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ boxShadow: "0 0 30px rgba(0,255,255,0.05), 0 0 60px rgba(59,130,246,0.03)" }} />
+      <h3 className={`text-lg font-semibold ${comingSoon ? "text-foreground/60" : "text-foreground"}`}>{title}</h3>
+      <p className={`text-sm leading-relaxed ${comingSoon ? "text-muted-foreground/60" : "text-muted-foreground"}`}>{description}</p>
+      {!comingSoon && (
+        <div className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ boxShadow: "0 0 30px rgba(0,255,255,0.05), 0 0 60px rgba(59,130,246,0.03)" }} />
+      )}
     </div>
   )
 }
@@ -217,11 +228,13 @@ export default function LandingPage() {
               icon={Clock}
               title="Session History"
               description="Review past estimations to track patterns and improve accuracy over time."
+              comingSoon
             />
             <FeatureCard
               icon={Plus}
               title="Custom Card Sets"
               description="Fibonacci, T-shirt sizes, or create your own. Adapt to your team's workflow."
+              comingSoon
             />
           </div>
         </div>

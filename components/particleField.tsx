@@ -93,9 +93,9 @@ export default function ParticleField() {
     }
 
     const MOUSE_RADIUS = 150
-    const REPULSION_STRENGTH = 8
-    const RETURN_SPEED = 0.03
-    const FRICTION = 0.92
+    const REPULSION_STRENGTH = 6
+    const RETURN_SPEED = 0.015
+    const FRICTION = 0.96
     const CONNECTION_DISTANCE = 120
 
     const animate = () => {
