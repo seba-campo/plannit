@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, Plus, Users, Zap, Shield, BarChart3, Clock } from "lucide-react"
 import ParticleField from "@/components/particleField"
 import { useEffect, useRef, useState } from "react"
+import { CustomFooter } from "@/components/ui/footer"
+import { HeaderComponent } from "@/components/ui/header"
 
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -95,32 +97,7 @@ export default function LandingPage() {
       </div>
       <ParticleField />
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-accent/50 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <h1 className="text-2xl font-bold text-[rgb(0,255,255)]">PlannIt</h1>
-          <nav className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-foreground"
-              asChild
-            >
-              <Link href="/join">Join Room</Link>
-            </Button>
-            <Button
-              size="sm"
-              className="bg-[rgb(0,255,255)] text-background hover:bg-[rgb(0,220,220)]"
-              asChild
-            >
-              <Link href="/create">
-                Create Room
-                <ArrowRight className="ml-1 h-3.5 w-3.5" />
-              </Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
+      <HeaderComponent/>
 
       {/* Hero Section */}
       <section className="relative z-10 flex min-h-[85vh] flex-col items-center justify-center px-4 py-20">
@@ -305,15 +282,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-accent/50 bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto flex flex-col items-center gap-4 px-4 py-8 sm:flex-row sm:justify-between">
-          <span className="text-sm font-semibold text-[rgb(0,255,255)]">PlannIt</span>
-          <p className="text-xs text-muted-foreground cursor-pointer" onClick={() => window.open("https://sebacampo.vercel.app/", "_blank")}>
-            {"© "}{new Date().getFullYear()}{" Made with ❤️ by sCampo"}
-          </p>
-        </div>
-      </footer>
+      <CustomFooter/>
     </div>
   )
 }

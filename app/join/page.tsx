@@ -37,10 +37,17 @@ export default function JoinRoom() {
     setIsLoading(true)
     setError(null)
 
+    const sanitizedName = yourName.trim().replace(/[<>"'`\\]/g, "").slice(0, 30)
+    if (!sanitizedName) {
+      setError("Please enter a valid name.")
+      setIsLoading(false)
+      return
+    }
+
     try {
       const response = await apiClient.joinRoom({
         roomId: roomCode.trim().toUpperCase(),
-        userName: { name: yourName.trim() }
+        userName: { name: sanitizedName }
       })
 
       setRoomData(response)
@@ -164,6 +171,7 @@ export default function JoinRoom() {
                     onChange={(e) => setYourName(e.target.value)}
                     disabled={isLoading}
                     required
+                    maxLength={30}
                     className="border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-[rgba(0,255,255,0.3)]"
                   />
                 </div>
