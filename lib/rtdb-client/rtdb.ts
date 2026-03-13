@@ -91,7 +91,6 @@ export class FirebaseRoomService {
 
     const unsubscribe = onValue(this.playersRef, (snapshot) => {
       const data = snapshot.val() || {}
-      // console.log(data)
       callback(data)
     })
 
@@ -116,7 +115,6 @@ export class FirebaseRoomService {
 
     const unsubscribe = onValue(this.ticketRef, (snapshot) => {
       const data = snapshot.val() || {}
-      // console.log(data)
       callback(data)
     })
 
@@ -129,7 +127,6 @@ export class FirebaseRoomService {
 
     const unsubscribe = onValue(this.ticketHistoryRef, (snapshot) => {
       const data = snapshot.val() || {}
-      // console.log(data)
       callback(data)
     })
 

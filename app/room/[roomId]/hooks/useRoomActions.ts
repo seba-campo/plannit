@@ -9,8 +9,11 @@ export const useRoomActions = (roomSession: RoomSession | undefined, userStatus:
     const handleCardSelect = async (value: string, revealed: boolean) => {
         if (!roomSession || revealed || userStatus === "spectator") return
 
+        const sanitizedValue = value.replace(/[<>"'`\\]/g, "").slice(0, 10)
+        if (!sanitizedValue) return
+
         try {
-            await firebaseRoomService.updatePlayerVote(roomSession.roomId, roomSession.playerId, value)
+            await firebaseRoomService.updatePlayerVote(roomSession.roomId, roomSession.playerId, sanitizedValue)
             return true
         } catch (err) {
             console.error("Failed to update vote:", err)

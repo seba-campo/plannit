@@ -44,7 +44,6 @@ const useCurrentItemBanner = (roomId?: string) => {
         });
 
         const unsubscribeHistory = rtdb.subscribeToTicketHistory(roomId, (historyData) => {
-            console.log(historyData)
             let history = historyData;
             if (history && !Array.isArray(history)) {
                 history = [history];
@@ -53,7 +52,6 @@ const useCurrentItemBanner = (roomId?: string) => {
         });
 
         const unsubscribeAverageScore = rtdb.subscribeToAverageScore(roomId, (averageScoreData) => {
-            console.log(averageScoreData)
             setAverageScore(averageScoreData)
         });
 
