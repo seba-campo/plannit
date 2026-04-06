@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { firebaseRoomService } from "@/lib/rtdb-client/rtdb"
+import { apiClient } from "@/lib/api-client/api"
 import { calculateAverage } from "@/utils/calculateAverage"
 import Player from "@/interfaces/Player"
 import { FirebaseRoom } from "@/lib/rtdb-client/DTOs"
 
-export const useRoomData = (roomId: string, isSessionReady: boolean) => {
+export const useRoomData = (roomId: string, isSessionReady: boolean, roomCode?: string) => {
     const [players, setPlayers] = useState<Player[]>([])
     const [roomData, setRoomData] = useState<FirebaseRoom | null>(null)
     const [dataError, setDataError] = useState<string | null>(null)
+    const [scaleValues, setScaleValues] = useState<string[]>([])
 
     const [revealed, setRevealed] = useState(false)
     const [gameState, setGameState] = useState<"waiting" | "voting" | "revealed">("waiting")
@@ -81,7 +83,14 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         const initData = async () => {
             if (isSessionReady && roomId) {
                 try {
-                    const initialRoom = await firebaseRoomService.initializeRoom(roomId)
+                    const [initialRoom] = await Promise.all([
+                        firebaseRoomService.initializeRoom(roomId),
+                        roomCode
+                            ? apiClient.getRoomDetails(roomCode).then((res) => {
+                                if (mounted) setScaleValues(res.data.votingType.scaleValues)
+                            }).catch(() => {})
+                            : Promise.resolve()
+                    ])
 
                     if (!mounted) return;
 
@@ -133,6 +142,7 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         getActivePlayersCount,
         getSpectatorsCount,
         getRoomLongId,
+        scaleValues,
         dataError
     }
 }

@@ -3,7 +3,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff, RotateCcw, UserX } from "lucide-react";
-import cardValues from "../../[roomId]/utilsRoom";
 import { useRoomActions } from "../../[roomId]/hooks/useRoomActions";
 import { RoomSession } from "@/lib/rtdb-client/rtdb";
 
@@ -16,6 +15,7 @@ interface IGameBoard {
     currentPlayerVote: string | null;
     atLeastOnePlayerVoted: boolean;
     setUserStatus: (status: "player" | "spectator") => void;
+    scaleValues: any[];
 }
 
 const GameBoard = ({
@@ -27,6 +27,7 @@ const GameBoard = ({
     currentPlayerVote,
     atLeastOnePlayerVoted,
     setUserStatus,
+    scaleValues,
 }: IGameBoard) => {
     const {
         handleCardSelect,
@@ -95,7 +96,7 @@ const GameBoard = ({
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
-                    {cardValues.map((value) => (
+                    {scaleValues.map((value) => (
                         <EstimationCard
                             key={value}
                             value={value}

@@ -1,6 +1,7 @@
 import {
   CreateRoomRequest,
   CreateRoomResponse,
+  GetRoomDetailsResponse,
   JoinRoomRequest,
   JoinRoomResponse,
   SaveGameHistoryRequest,
@@ -66,8 +67,8 @@ class ApiClient {
     })
   }
 
-  async getRoomDetails(roomCode: string): Promise<JoinRoomResponse> {
-    return this.request<JoinRoomResponse>(`/room/${roomCode}`)
+  async getRoomDetails(roomCode: string): Promise<GetRoomDetailsResponse> {
+    return this.request<GetRoomDetailsResponse>(`/room/${roomCode}`)
   }
 
   async saveGameHistory(data: SaveGameHistoryRequest): Promise<SaveGameHistoryResponse> {

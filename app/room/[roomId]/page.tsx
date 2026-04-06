@@ -38,8 +38,9 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     getSpectatorsCount,
     atLeastOnePlayerVoted,
     getRoomLongId,
+    scaleValues,
     dataError
-  } = useRoomData(roomSession?.roomId || "", !!roomSession)
+  } = useRoomData(roomSession?.roomId || "", !!roomSession, roomSession?.roomCode)
 
   // Actions for the page (like Logout in header)
   // GameBoard instantiates its own actions, but Header needs logout.
@@ -129,6 +130,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
               average={parseInt(average)}
               atLeastOnePlayerVoted={atLeastOnePlayerVoted}
               setUserStatus={setUserStatus}
+              scaleValues={scaleValues}
             />
 
             {/* Lista de jugadores */}

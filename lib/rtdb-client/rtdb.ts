@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app"
 import { getDatabase, ref, onValue, set, get, remove, type Database, update, runTransaction } from "firebase/database"
 import { getAuth, signInAnonymously } from "firebase/auth"
 import { FirebaseRoom, FirebasePlayer } from "./DTOs"
+export type { RoomSession } from "./DTOs"
 import { VotingCard } from "@/interfaces/VotingCard"
 
 // Firebase configuration - you should move these to environment variables
@@ -329,8 +330,6 @@ export class FirebaseRoomService {
   }
 
 }
-
-
 
 // Create singleton instance
 export const firebaseRoomService = new FirebaseRoomService()
