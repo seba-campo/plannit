@@ -68,7 +68,9 @@ class ApiClient {
   }
 
   async getRoomDetails(roomCode: string): Promise<GetRoomDetailsResponse> {
-    return this.request<GetRoomDetailsResponse>(`/room/${roomCode}`)
+    return this.request<GetRoomDetailsResponse>(`/room/${roomCode}`, {
+      method: "GET"
+    })
   }
 
   async saveGameHistory(data: SaveGameHistoryRequest): Promise<SaveGameHistoryResponse> {

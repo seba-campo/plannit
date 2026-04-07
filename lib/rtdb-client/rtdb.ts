@@ -5,7 +5,7 @@ import { FirebaseRoom, FirebasePlayer } from "./DTOs"
 export type { RoomSession } from "./DTOs"
 import { VotingCard } from "@/interfaces/VotingCard"
 
-// Firebase configuration - you should move these to environment variables
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

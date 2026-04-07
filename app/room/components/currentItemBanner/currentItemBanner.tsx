@@ -14,14 +14,12 @@ export default function CurrentItemBanner({
 
 }: CurrentItemBannerProps) {
     const {
-        currentCard: hookCurrentCard,
-        history: hookHistory,
-        averageScore: hookAverageScore,
+        currentCard,
+        history,
+        averageScore,
     } = useCurrentItemBanner(roomId)
 
-    const currentCard = hookCurrentCard
-    const history = hookHistory;
-    const averageScore = hookAverageScore ?? undefined;
+    const hookAverageScore = averageScore ?? undefined;
 
     return (
         <Card className="border-accent transition-all bg-accent/50 backdrop-blur-md rounded-lg border text-card-foreground shadow-sm bg">
@@ -34,7 +32,7 @@ export default function CurrentItemBanner({
             <CardContent className="space-y-4">
                 {/* Current Voting Card */}
                 {currentCard ? (
-                    <HistoryCard card={currentCard} isHistory={false} votingValue={averageScore} />
+                    <HistoryCard card={currentCard} isHistory={false} votingValue={hookAverageScore} />
                 ) : (
                     <div className="p-8 text-center rounded-lg border-2 border-dashed border-muted">
                         <Clock className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
