@@ -44,8 +44,8 @@ export default function ParticleField() {
         baseY: y,
         vx: 0,
         vy: 0,
-        size: 1 + Math.random() * 2.5,
-        opacity: 0.15 + Math.random() * 0.5,
+        size: 0.8 + Math.random() * 1.5,
+        opacity: 0.08 + Math.random() * 0.25,
         color: PARTICLE_COLORS[colorIndex],
       })
     }
@@ -162,7 +162,7 @@ export default function ParticleField() {
           const dist = Math.sqrt(dx * dx + dy * dy)
 
           if (dist < CONNECTION_DISTANCE) {
-            const opacity = (1 - dist / CONNECTION_DISTANCE) * 0.12
+            const opacity = (1 - dist / CONNECTION_DISTANCE) * 0.06
             ctx.beginPath()
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)

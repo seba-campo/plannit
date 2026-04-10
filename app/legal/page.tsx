@@ -1,6 +1,3 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Users } from "lucide-react"
 import type { Metadata } from "next"
 import { CustomFooter } from "@/components/ui/footer"
 import { HeaderComponent } from "@/components/ui/header"

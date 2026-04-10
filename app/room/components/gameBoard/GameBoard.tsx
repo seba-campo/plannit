@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff, RotateCcw, UserX } from "lucide-react";
 import { useRoomActions } from "../../[roomId]/hooks/useRoomActions";
-import { RoomSession } from "@/lib/rtdb-client/rtdb";
+import { type RoomSession } from "@/lib/rtdb-client/DTOs";
 
 interface IGameBoard {
     roomSession: RoomSession | undefined;

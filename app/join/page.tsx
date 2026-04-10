@@ -2,15 +2,28 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, ArrowRight, Loader2, Users } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { apiClient, getErrorMessage, type JoinRoomResponse } from "@/lib/api-client/api"
+import { apiClient, getErrorMessage } from "@/lib/api-client/api"
+import { type JoinRoomResponse } from "@/lib/api-client/DTOs"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import ParticleField from "@/components/particleField"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card"
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  Loader2, 
+  Users 
+} from "lucide-react"
 
 type CachedSession = {
   roomCode: string
