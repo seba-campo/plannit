@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { firebaseRoomService } from "@/lib/rtdb-client/rtdb"
-import { calculateAverage } from "@/utils/calculateAverage"
-import Player from "@/interfaces/Player"
 import { FirebaseRoom } from "@/lib/rtdb-client/DTOs"
+import Player from "@/interfaces/Player"
+import { calculateAverage } from "@/utils/calculateAverage"
 
 export const useRoomData = (roomId: string, isSessionReady: boolean) => {
     const [players, setPlayers] = useState<Player[]>([])

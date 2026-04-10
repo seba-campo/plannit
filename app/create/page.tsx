@@ -2,15 +2,29 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { apiClient, getErrorMessage } from "@/lib/api-client/api"
+import { type CreateRoomResponse } from "@/lib/api-client/DTOs"
+import ParticleField from "@/components/particleField"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, ArrowRight, Copy, Loader2, Plus } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { apiClient, getErrorMessage, type CreateRoomResponse } from "@/lib/api-client/api"
-import ParticleField from "@/components/particleField"
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card"
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  Copy, 
+  Loader2, 
+  Plus 
+} from "lucide-react"
 
 export default function CreateRoom() {
   const [yourName, setYourName] = useState("")

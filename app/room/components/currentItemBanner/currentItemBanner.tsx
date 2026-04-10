@@ -1,7 +1,7 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
 import useCurrentItemBanner from "./useCurrentItemBanner"
+import { Card, CardContent } from "@/components/ui/card"
 import HistoryCard from "./components/HistoryCard"
 import { Clock } from "lucide-react"
 
