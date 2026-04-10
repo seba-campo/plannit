@@ -59,7 +59,7 @@ export const useRoomData = (roomId: string, isSessionReady: boolean, roomCode?: 
         unsubscribeRef.current = [roomUnsubscribe, playersUnsubscribe]
     }, [])
 
-    const average = calculateAverage(players)
+    const average = calculateAverage(players, scaleValues)
     const allVoted = players.filter((p) => p.isOnline && p.currentStatus !== "spectator").every((player) => player.hasVoted)
 
     const getActivePlayersCount = () => {

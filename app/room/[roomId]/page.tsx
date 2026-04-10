@@ -34,12 +34,12 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
     isLoading: isDataLoading,
     isConnected,
     average,
+    atLeastOnePlayerVoted,
+    scaleValues,
+    dataError,
     getActivePlayersCount,
     getSpectatorsCount,
-    atLeastOnePlayerVoted,
-    getRoomLongId,
-    scaleValues,
-    dataError
+    getRoomLongId
   } = useRoomData(roomSession?.roomId || "", !!roomSession, roomSession?.roomCode)
 
   // Actions for the page (like Logout in header)
@@ -127,7 +127,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
               userRole={userRole}
               userStatus={userStatus}
               currentPlayerVote={getCurrentPlayerVote() ?? null}
-              average={parseInt(average)}
+              average={isNaN(parseInt(average)) ? scaleValues.indexOf(average) : parseInt(average)}
               atLeastOnePlayerVoted={atLeastOnePlayerVoted}
               setUserStatus={setUserStatus}
               scaleValues={scaleValues}

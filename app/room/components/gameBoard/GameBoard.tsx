@@ -34,7 +34,6 @@ const GameBoard = ({
         handleReveal,
         handleReset,
         handleUserTypeToggle
-
     } = useRoomActions(roomSession, userStatus);
 
     const isCreator = () => userRole === "admin";

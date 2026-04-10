@@ -76,7 +76,7 @@ const PlayerList = ({
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {players.map((player) => {
-            const isSpectator = player.currentStatus === "spectator";
+            const isSpectator = player.currentStatus === "spectator"; 
 
             return (
               <div
@@ -106,7 +106,7 @@ const PlayerList = ({
                     </div>
                   ) : revealed ? (
                     <div className="text-3xl font-bold text-primary animate-in zoom-in duration-300">
-                      {player.vote || "-"}
+                      {player.vote === "0" ? "💤" : player.vote}
                     </div>
                   ) : player.hasVoted ? (
                     <div className="flex items-center gap-2 text-green-600 animate-in zoom-in spin-in-12 duration-500">
