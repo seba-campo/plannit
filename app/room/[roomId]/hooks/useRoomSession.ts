@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { firebaseRoomService, type RoomSession } from "@/lib/rtdb-client/rtdb"
+import { firebaseRoomService } from "@/lib/rtdb-client/rtdb"
+import { RoomSession } from "@/lib/rtdb-client/DTOs"
 
 export const useRoomSession = (roomId: string) => {
     const router = useRouter()

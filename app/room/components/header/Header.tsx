@@ -1,8 +1,8 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RoomSession } from "@/lib/rtdb-client/rtdb";
+import { RoomSession } from "@/lib/rtdb-client/DTOs"
 import { LogOut, Wifi, WifiOff } from "lucide-react";
-import Link from "next/link";
 
 interface IHeaderInformation {
     roomId: string;
