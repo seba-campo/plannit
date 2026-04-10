@@ -7,7 +7,7 @@ import { FloatingCards } from "./floating-cards"
 
 export function HeroSection() {
   return (
-    <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-20">
+    <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-20 sm:px-8 lg:px-12">
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
         {/* Left: Text content */}
         <div className="flex max-w-2xl flex-col items-center gap-8 text-center lg:items-start lg:text-left">
