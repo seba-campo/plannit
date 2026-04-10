@@ -11,7 +11,7 @@ interface IGameBoard {
     revealed: boolean;
     userRole: "admin" | "player";
     userStatus: "player" | "spectator";
-    average: number;
+    average: number | string;
     currentPlayerVote: string | null;
     atLeastOnePlayerVoted: boolean;
     setUserStatus: (status: "player" | "spectator") => void;

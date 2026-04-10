@@ -28,7 +28,7 @@ export const getStatusColor = (status: VotingCard["status"]) => {
 const useCurrentItemBanner = (roomId?: string) => {
     const [currentCard, setCurrentCard] = useState<VotingCard | null>(null)
     const [history, setHistory] = useState<VotingCard[] | null>(null)
-    const [averageScore, setAverageScore] = useState<number | null>(null)
+    const [averageScore, setAverageScore] = useState<number | string | null>(null)
 
     useEffect(() => {
         if (!roomId) return;

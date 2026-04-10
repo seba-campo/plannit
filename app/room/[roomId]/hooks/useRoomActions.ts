@@ -21,7 +21,7 @@ export const useRoomActions = (roomSession: RoomSession | undefined, userStatus:
         }
     }
 
-    const handleReveal = async (isCreator: boolean, revealed: boolean, average: number) => {
+    const handleReveal = async (isCreator: boolean, revealed: boolean, average: number | string) => {
         if (!roomSession || !isCreator || revealed) return
         try {
             await firebaseRoomService.revealVotes(roomSession.roomId, average)

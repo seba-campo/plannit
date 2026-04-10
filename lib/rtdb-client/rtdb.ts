@@ -99,11 +99,11 @@ export class FirebaseRoomService {
     return unsubscribe
   }
 
-  public subscribeToAverageScore(roomId: string, callback: (averageScore: number) => void): () => void {
+  public subscribeToAverageScore(roomId: string, callback: (averageScore: number | string) => void): () => void {
     this.averageScoreRef = ref(this.database, `planningRooms/${roomId}/averageScore`)
 
     const unsubscribe = onValue(this.averageScoreRef, (snapshot) => {
-      const data = snapshot.val() || 0
+      const data = snapshot.val() ?? 0
       callback(data)
     })
 
@@ -176,7 +176,7 @@ export class FirebaseRoomService {
   }
 
   // Reveal all votes
-  public async revealVotes(roomId: string, average: number): Promise<void> {
+  public async revealVotes(roomId: string, average: number | string): Promise<void> {
     const gameStateRef = ref(this.database, `planningRooms/${roomId}/gameState`);
     const isRevealedRef = ref(this.database, `planningRooms/${roomId}/isRevealed`);
 
@@ -184,11 +184,11 @@ export class FirebaseRoomService {
     await Promise.all([update(gameStateRef, { "gameState": "revealed" }), update(isRevealedRef, { "isRevealed": true })])
   }
 
-  public async setAverageScore(roomId: string, average: number): Promise<void> {
+  public async setAverageScore(roomId: string, average: number | string): Promise<void> {
     if (!roomId) return;
     const averageRef = ref(this.database, `planningRooms/${roomId}/averageScore`);
-    await runTransaction(averageRef, (currentAverage) => {
-      return average as number;
+    await runTransaction(averageRef, () => {
+      return average;
     })
   }
 
@@ -308,7 +308,7 @@ export class FirebaseRoomService {
 
     const currentTicket = currentTicketSnapshot.val() as VotingCard;
     currentTicket.status = 'completed';
-    currentTicket.averageValue = currentAverageScoreSnapshot.val() as number;
+    currentTicket.averageValue = currentAverageScoreSnapshot.val() as number | string;
     const historyTicketSnapshot = await get(ticketHistoryRef);
 
     if (!historyTicketSnapshot.exists()) {

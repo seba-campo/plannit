@@ -127,7 +127,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
               userRole={userRole}
               userStatus={userStatus}
               currentPlayerVote={getCurrentPlayerVote() ?? null}
-              average={isNaN(parseInt(average)) ? scaleValues.indexOf(average) : parseInt(average)}
+              average={average}
               atLeastOnePlayerVoted={atLeastOnePlayerVoted}
               setUserStatus={setUserStatus}
               scaleValues={scaleValues}
