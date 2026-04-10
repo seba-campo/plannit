@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react"
+import { apiClient } from "@/lib/api-client/api"
 import { firebaseRoomService } from "@/lib/rtdb-client/rtdb"
 import { FirebaseRoom } from "@/lib/rtdb-client/DTOs"
 import Player from "@/interfaces/Player"
