@@ -38,8 +38,11 @@ export interface GetRoomDetailsResponse {
     }
 }
 
+export type VotingTypeKey =  "history-points" | "tshirt";
+
 export interface CreateRoomRequest {
     userData: { name: string }
+    voteType?: VotingTypeKey
 }
 
 export interface CreateRoomResponse {

@@ -95,7 +95,7 @@ const GameBoard = ({
                     )}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
+                <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))" }}>
                     {scaleValues.map((value) => (
                         <EstimationCard
                             key={value}
