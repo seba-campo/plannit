@@ -68,8 +68,8 @@ export default function JoinRoom() {
       localStorage.setItem(
         "currentRoom",
         JSON.stringify({
-          roomCode: response.roomCode,
-          roomId: response.rtdbKey,
+          roomCode: response.roomInfo.roomCode,
+          roomId: response.roomInfo.rtdbKey,
           playerId: response.userData.uniqueId,
           playerName: response.userData.name,
           playerType: response.userData.userType
@@ -78,7 +78,7 @@ export default function JoinRoom() {
 
       setTimeout(() => {
         sessionStorage.removeItem("cachedRoomCode")
-        router.push(`/room/${response.roomCode}`)
+        router.push(`/room/${response.roomInfo.roomCode}`)
       }, 1500)
     } catch (err) {
       setError(getErrorMessage(err))

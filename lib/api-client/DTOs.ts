@@ -1,7 +1,48 @@
 import { VotingCard } from "@/interfaces/VotingCard"
 
+export interface GetRoomDetailsResponse {
+    message: string
+    data: {
+        votingType: {
+            title: string
+            description: string
+            scaleValues: string[]
+        }
+        roomOwner: {
+            vote: number
+            hasVoted: boolean
+            lastSeen: number
+            currentStatus: string
+            uniqueId: string
+            name: string
+            userType: string
+        }
+        roomAdmins: Array<{
+            vote: number
+            hasVoted: boolean
+            lastSeen: number
+            currentStatus: string
+            uniqueId: string
+            name: string
+            userType: string
+        }>
+        roomCapacity: number
+        realTimeRef: string
+        roomCodeSimplified: string
+        gameHistory: {
+            startedAt: { _seconds: number; _nanoseconds: number }
+            modifiedAt: null | { _seconds: number; _nanoseconds: number }
+            tickets: VotingCard[]
+        }
+        actualUsers: number
+    }
+}
+
+export type VotingTypeKey =  "history-points" | "tshirt";
+
 export interface CreateRoomRequest {
     userData: { name: string }
+    voteType?: VotingTypeKey
 }
 
 export interface CreateRoomResponse {
@@ -29,8 +70,16 @@ export interface JoinRoomRequest {
 }
 
 export interface JoinRoomResponse {
-    roomCode: string,
-    rtdbKey: string,
+    message: string;
+    roomInfo: {
+        roomCode: string;
+        rtdbKey: string;
+        votingType: {
+            title: string;
+            description: string;
+            scaleValues: string[];
+        };
+    };
     userData: {
         uniqueId: string,
         name: string,

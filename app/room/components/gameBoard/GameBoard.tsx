@@ -3,7 +3,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff, RotateCcw, UserX } from "lucide-react";
-import cardValues from "../../[roomId]/utilsRoom";
 import { useRoomActions } from "../../[roomId]/hooks/useRoomActions";
 import { type RoomSession } from "@/lib/rtdb-client/DTOs";
 
@@ -12,10 +11,11 @@ interface IGameBoard {
     revealed: boolean;
     userRole: "admin" | "player";
     userStatus: "player" | "spectator";
-    average: number;
+    average: string;
     currentPlayerVote: string | null;
     atLeastOnePlayerVoted: boolean;
     setUserStatus: (status: "player" | "spectator") => void;
+    scaleValues: any[];
 }
 
 const GameBoard = ({
@@ -26,6 +26,7 @@ const GameBoard = ({
     average,
     currentPlayerVote,
     atLeastOnePlayerVoted,
+    scaleValues,
     setUserStatus,
 }: IGameBoard) => {
     const {
@@ -33,7 +34,6 @@ const GameBoard = ({
         handleReveal,
         handleReset,
         handleUserTypeToggle
-
     } = useRoomActions(roomSession, userStatus);
 
     const isCreator = () => userRole === "admin";
@@ -94,14 +94,14 @@ const GameBoard = ({
                     )}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
-                    {cardValues.map((value) => (
+                <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))" }}>
+                    {scaleValues.map((value) => (
                         <EstimationCard
                             key={value}
                             value={value}
                             onClick={() => handleCardSelect(value, revealed)}
                             disabled={revealed || isSpectator()}
-                            isSelected={currentPlayerVote === value}
+                            isSelected={String(currentPlayerVote) === String(value)}
                         />
                     ))}
                 </div>

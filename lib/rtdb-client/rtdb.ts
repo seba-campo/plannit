@@ -2,9 +2,10 @@ import { initializeApp } from "firebase/app"
 import { getDatabase, ref, onValue, set, get, remove, type Database, update, runTransaction } from "firebase/database"
 import { getAuth, signInAnonymously } from "firebase/auth"
 import { FirebaseRoom, FirebasePlayer } from "./DTOs"
+export type { RoomSession } from "./DTOs"
 import { VotingCard } from "@/interfaces/VotingCard"
 
-// Firebase configuration - you should move these to environment variables
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -98,11 +99,11 @@ export class FirebaseRoomService {
     return unsubscribe
   }
 
-  public subscribeToAverageScore(roomId: string, callback: (averageScore: number) => void): () => void {
+  public subscribeToAverageScore(roomId: string, callback: (averageScore: number | string) => void): () => void {
     this.averageScoreRef = ref(this.database, `planningRooms/${roomId}/averageScore`)
 
     const unsubscribe = onValue(this.averageScoreRef, (snapshot) => {
-      const data = snapshot.val() || 0
+      const data = snapshot.val() ?? 0
       callback(data)
     })
 
@@ -175,19 +176,20 @@ export class FirebaseRoomService {
   }
 
   // Reveal all votes
-  public async revealVotes(roomId: string, average: number): Promise<void> {
-    const gameStateRef = ref(this.database, `planningRooms/${roomId}/gameState`);
-    const isRevealedRef = ref(this.database, `planningRooms/${roomId}/isRevealed`);
-
-    await this.setAverageScore(roomId, average);
-    await Promise.all([update(gameStateRef, { "gameState": "revealed" }), update(isRevealedRef, { "isRevealed": true })])
+  public async revealVotes(roomId: string, average: number | string): Promise<void> {
+    const roomRef = ref(this.database, `planningRooms/${roomId}`);
+    await update(roomRef, {
+      averageScore: average,
+      gameState: "revealed",
+      isRevealed: true,
+    })
   }
 
-  public async setAverageScore(roomId: string, average: number): Promise<void> {
+  public async setAverageScore(roomId: string, average: number | string): Promise<void> {
     if (!roomId) return;
     const averageRef = ref(this.database, `planningRooms/${roomId}/averageScore`);
-    await runTransaction(averageRef, (currentAverage) => {
-      return average as number;
+    await runTransaction(averageRef, () => {
+      return average;
     })
   }
 
@@ -307,7 +309,7 @@ export class FirebaseRoomService {
 
     const currentTicket = currentTicketSnapshot.val() as VotingCard;
     currentTicket.status = 'completed';
-    currentTicket.averageValue = currentAverageScoreSnapshot.val() as number;
+    currentTicket.averageValue = currentAverageScoreSnapshot.val() as number | string;
     const historyTicketSnapshot = await get(ticketHistoryRef);
 
     if (!historyTicketSnapshot.exists()) {
@@ -329,8 +331,6 @@ export class FirebaseRoomService {
   }
 
 }
-
-
 
 // Create singleton instance
 export const firebaseRoomService = new FirebaseRoomService()

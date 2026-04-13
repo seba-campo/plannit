@@ -6,10 +6,10 @@ export const useRoomActions = (roomSession: RoomSession | undefined, userStatus:
     const [error, setError] = useState<string | null>(null)
     const [isUpdatingUserType, setIsUpdatingUserType] = useState(false)
 
-    const handleCardSelect = async (value: string, revealed: boolean) => {
+    const handleCardSelect = async (value: string | number, revealed: boolean) => {
         if (!roomSession || revealed || userStatus === "spectator") return
 
-        const sanitizedValue = value.replace(/[<>"'`\\]/g, "").slice(0, 10)
+        const sanitizedValue = String(value).replace(/[<>"'`\\]/g, "").slice(0, 10)
         if (!sanitizedValue) return
 
         try {
@@ -21,9 +21,9 @@ export const useRoomActions = (roomSession: RoomSession | undefined, userStatus:
         }
     }
 
-    const handleReveal = async (isCreator: boolean, revealed: boolean, average: number) => {
+    const handleReveal = async (isCreator: boolean, revealed: boolean, average: number | string) => {
         if (!roomSession || !isCreator || revealed) return
-        try {
+try {
             await firebaseRoomService.revealVotes(roomSession.roomId, average)
         } catch (err) {
             setError("Failed to reveal votes")

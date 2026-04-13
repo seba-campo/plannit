@@ -12,7 +12,7 @@ export interface FirebasePlayer {
 }
 
 export interface FirebaseRoom { 
-  averageScore: number
+  averageScore: number | string
   currentRound: number
   cardStatus: "hidden" | "revelaed"
   isRevealed: boolean

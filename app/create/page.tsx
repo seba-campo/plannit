@@ -5,10 +5,17 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { apiClient, getErrorMessage } from "@/lib/api-client/api"
-import { type CreateRoomResponse } from "@/lib/api-client/DTOs"
+import { type CreateRoomResponse, type VotingTypeKey } from "@/lib/api-client/DTOs"
 import ParticleField from "@/components/particleField"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { 
   Card, 
@@ -28,6 +35,7 @@ import {
 
 export default function CreateRoom() {
   const [yourName, setYourName] = useState("")
+  const [votingType, setVotingType] = useState<VotingTypeKey>("history-points")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [roomData, setRoomData] = useState<CreateRoomResponse | null>(null)
@@ -48,7 +56,8 @@ export default function CreateRoom() {
 
     try {
       const response = await apiClient.createRoom({
-        userData: { name: sanitizedName }
+        userData: { name: sanitizedName },
+        voteType: votingType,
       })
 
       setRoomData(response)
@@ -172,6 +181,22 @@ export default function CreateRoom() {
                     maxLength={30}
                     className="border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-[rgba(0,255,255,0.3)]"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground">Scoring Type</Label>
+                  <Select
+                    value={votingType}
+                    onValueChange={(val) => setVotingType(val as VotingTypeKey)}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger className="border-accent/50 bg-background/60 text-foreground focus:ring-[rgba(0,255,255,0.3)]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="history-points">Story Points (Fibonacci)</SelectItem>
+                      <SelectItem value="t-shirt">T-Shirt Sizing</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </form>
             )}

@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from "react"
+import { apiClient } from "@/lib/api-client/api"
 import { firebaseRoomService } from "@/lib/rtdb-client/rtdb"
 import { FirebaseRoom } from "@/lib/rtdb-client/DTOs"
 import Player from "@/interfaces/Player"
 import { calculateAverage } from "@/utils/calculateAverage"
 
-export const useRoomData = (roomId: string, isSessionReady: boolean) => {
+export const useRoomData = (roomId: string, isSessionReady: boolean, roomCode?: string) => {
     const [players, setPlayers] = useState<Player[]>([])
     const [roomData, setRoomData] = useState<FirebaseRoom | null>(null)
     const [dataError, setDataError] = useState<string | null>(null)
+    const [scaleValues, setScaleValues] = useState<string[]>([])
 
     const [revealed, setRevealed] = useState(false)
     const [gameState, setGameState] = useState<"waiting" | "voting" | "revealed">("waiting")
@@ -57,7 +59,10 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         unsubscribeRef.current = [roomUnsubscribe, playersUnsubscribe]
     }, [])
 
-    const average = calculateAverage(players)
+    const average = revealed && roomData?.averageScore != null
+        ? String(roomData.averageScore)
+        : calculateAverage(players, scaleValues)
+
     const allVoted = players.filter((p) => p.isOnline && p.currentStatus !== "spectator").every((player) => player.hasVoted)
 
     const getActivePlayersCount = () => {
@@ -81,7 +86,14 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         const initData = async () => {
             if (isSessionReady && roomId) {
                 try {
-                    const initialRoom = await firebaseRoomService.initializeRoom(roomId)
+                    const [initialRoom] = await Promise.all([
+                        firebaseRoomService.initializeRoom(roomId),
+                        roomCode
+                            ? apiClient.getRoomDetails(roomCode).then((res) => {
+                                if (mounted) setScaleValues(res.data.votingType.scaleValues)
+                            }).catch(() => {})
+                            : Promise.resolve()
+                    ])
 
                     if (!mounted) return;
 
@@ -123,16 +135,17 @@ export const useRoomData = (roomId: string, isSessionReady: boolean) => {
         roomData,
         revealed,
         gameState,
-        setGameState,
         currentRound,
         isLoading,
         atLeastOnePlayerVoted,
         isConnected,
         average,
         allVoted,
+        scaleValues,
+        dataError,
+        setGameState,
         getActivePlayersCount,
         getSpectatorsCount,
         getRoomLongId,
-        dataError
     }
 }

@@ -4,6 +4,6 @@ export interface VotingCard {
     id: string
     title: string
     url: string
-    averageValue: number;
+    averageValue: number | string;
     status: "voting" | "completed" | "skipped"
 }
