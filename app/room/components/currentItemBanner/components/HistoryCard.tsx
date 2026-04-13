@@ -7,7 +7,7 @@ import useCurrentItemBanner from "../useCurrentItemBanner";
 interface HistoryCardProps {
     card: VotingCard
     isHistory?: boolean
-    votingValue?: number
+    votingValue?: string | number
 }
 
 const HistoryCard = ({ card, isHistory = false, votingValue }: HistoryCardProps) => {
