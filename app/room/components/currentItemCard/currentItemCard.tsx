@@ -19,7 +19,7 @@ export default function CurrentItemCard({ roomId }: CurrentItemCardProps) {
   } = useCurrentItemCard(roomId);
 
   return (
-    <Card className="border-2 border-accent hover:border-primary transition-all duration-500 bg-accent/60 backdrop-blur-md tech-card-glow">
+    <Card className="border border-neon/15 hover:border-neon/50 transition-all duration-500 bg-neon/5 backdrop-blur-md hover:shadow-[0_0_20px_rgb(var(--neon)_/_0.08)]">
       <div className="space-y-1 pb-3 pl-6 pt-2 mt-4 block">
         <h2 className="text-xl font-semibold flex items-center">
           What's next?
@@ -53,7 +53,7 @@ export default function CurrentItemCard({ roomId }: CurrentItemCardProps) {
         <CardFooter>
           <Button
             type="submit"
-            className="w-full group hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300"
+            className="w-full group bg-neon text-background hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.25)] transition-all duration-300"
             disabled={isLoading}
           >
             {isLoading ? "Submitting..." : "Add"}

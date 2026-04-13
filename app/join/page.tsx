@@ -88,8 +88,8 @@ export default function JoinRoom() {
   }
 
   const handleDirectJoin = () => {
-    if (roomData?.roomCode) {
-      router.push(`/room/${roomData.roomCode}`)
+    if (roomData?.roomInfo.roomCode) {
+      router.push(`/room/${roomData.roomInfo.roomCode}`)
     }
   }
 
@@ -112,7 +112,7 @@ export default function JoinRoom() {
             <ArrowLeft className="h-4 w-4" />
             Back to home
           </Link>
-          <h1 className="mx-auto text-2xl font-bold text-[rgb(0,255,255)]">PlannIt</h1>
+          <h1 className="mx-auto text-2xl font-bold text-neon">PlannIt</h1>
         </div>
       </header>
 
@@ -125,7 +125,7 @@ export default function JoinRoom() {
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               {roomData
-                ? `Welcome to ${roomData.roomCode}`
+                ? `Welcome to ${roomData.roomInfo.roomCode}`
                 : "Enter the room code shared by your team moderator"}
             </CardDescription>
           </CardHeader>
@@ -144,7 +144,7 @@ export default function JoinRoom() {
                   <div className="space-y-3 rounded-lg border border-accent/50 bg-background/60 p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Room Code:</span>
-                      <span className="font-mono text-[rgb(0,255,255)]">{roomData.roomCode}</span>
+                      <span className="font-mono text-neon">{roomData.roomInfo.roomCode}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Your Name:</span>
@@ -168,7 +168,7 @@ export default function JoinRoom() {
                     placeholder="Enter room code"
                     value={roomCode}
                     onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                    className="font-mono uppercase border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-[rgba(0,255,255,0.3)]"
+                    className="font-mono uppercase border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-neon/30"
                     maxLength={8}
                     disabled={isLoading}
                     required
@@ -185,7 +185,7 @@ export default function JoinRoom() {
                     disabled={isLoading}
                     required
                     maxLength={30}
-                    className="border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-[rgba(0,255,255,0.3)]"
+                    className="border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-neon/30"
                   />
                 </div>
               </form>
@@ -195,7 +195,7 @@ export default function JoinRoom() {
           <CardFooter>
             {roomData ? (
               <button
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[rgb(0,255,255)] px-6 py-3 text-sm font-medium text-background transition-all hover:bg-[rgb(0,220,220)] hover:shadow-lg hover:shadow-[rgba(0,255,255,0.2)]"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-neon px-6 py-3 text-sm font-medium text-background transition-all hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.2)]"
                 onClick={handleDirectJoin}
               >
                 Go to Room Now
@@ -203,7 +203,7 @@ export default function JoinRoom() {
               </button>
             ) : (
               <button
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[rgb(0,255,255)] px-6 py-3 text-sm font-medium text-background transition-all hover:bg-[rgb(0,220,220)] hover:shadow-lg hover:shadow-[rgba(0,255,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-neon px-6 py-3 text-sm font-medium text-background transition-all hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.2)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 onClick={handleJoinRoom}
                 disabled={isLoading || !roomCode.trim() || !yourName.trim()}
               >

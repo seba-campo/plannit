@@ -14,7 +14,7 @@ export function HeroSection() {
           <h1 className="text-5xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
             Estimate
             <br />
-            <span className="text-[rgb(0,255,255)]">together.</span>
+            <span className="text-neon">together.</span>
           </h1>
 
           <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
@@ -24,7 +24,7 @@ export function HeroSection() {
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
             <Button
               size="lg"
-              className="group h-14 bg-[rgb(0,255,255)] px-8 text-base font-semibold text-background hover:bg-[rgb(0,220,220)] hover:shadow-lg hover:shadow-[rgba(0,255,255,0.25)]"
+              className="group h-14 bg-neon px-8 text-base font-semibold text-background hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.25)]"
               asChild
             >
               <Link href="/create">
@@ -36,7 +36,7 @@ export function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="group h-14 border-[rgba(0,255,255,0.3)] bg-transparent px-8 text-base font-semibold text-foreground backdrop-blur-sm hover:border-[rgba(0,255,255,0.5)] hover:bg-[rgba(0,255,255,0.05)]"
+              className="group h-14 border-neon/30 bg-transparent px-8 text-base font-semibold text-foreground backdrop-blur-sm hover:border-neon/50 hover:bg-neon/5"
               asChild
             >
               <Link href="/join">

@@ -116,7 +116,7 @@ export default function CreateRoom() {
             <ArrowLeft className="h-4 w-4" />
             Back to home
           </Link>
-          <h1 className="mx-auto text-2xl font-bold text-[rgb(0,255,255)]">PlannIt</h1>
+          <h1 className="mx-auto text-2xl font-bold text-neon">PlannIt</h1>
         </div>
       </header>
 
@@ -146,7 +146,7 @@ export default function CreateRoom() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-muted-foreground">Room Code</Label>
                   <div className="flex items-center justify-between rounded-lg border border-accent/50 bg-background/60 p-4">
-                    <span className="font-mono text-xl tracking-wider text-[rgb(0,255,255)]">
+                    <span className="font-mono text-xl tracking-wider text-neon">
                       {roomData.data.room.roomDocCode}
                     </span>
                     <button
@@ -179,7 +179,7 @@ export default function CreateRoom() {
                     disabled={isLoading}
                     required
                     maxLength={30}
-                    className="border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-[rgba(0,255,255,0.3)]"
+                    className="border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-neon/30"
                   />
                 </div>
                 <div className="space-y-2">
@@ -189,7 +189,7 @@ export default function CreateRoom() {
                     onValueChange={(val) => setVotingType(val as VotingTypeKey)}
                     disabled={isLoading}
                   >
-                    <SelectTrigger className="border-accent/50 bg-background/60 text-foreground focus:ring-[rgba(0,255,255,0.3)]">
+                    <SelectTrigger className="border-accent/50 bg-background/60 text-foreground focus:ring-neon/30">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -205,7 +205,7 @@ export default function CreateRoom() {
           <CardFooter>
             {roomData ? (
               <button
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[rgb(0,255,255)] px-6 py-3 text-sm font-medium text-background transition-all hover:bg-[rgb(0,220,220)] hover:shadow-lg hover:shadow-[rgba(0,255,255,0.2)]"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-neon px-6 py-3 text-sm font-medium text-background transition-all hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.2)]"
                 onClick={handleStartSession}
               >
                 Start Session
@@ -213,7 +213,7 @@ export default function CreateRoom() {
               </button>
             ) : (
               <button
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[rgb(0,255,255)] px-6 py-3 text-sm font-medium text-background transition-all hover:bg-[rgb(0,220,220)] hover:shadow-lg hover:shadow-[rgba(0,255,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-neon px-6 py-3 text-sm font-medium text-background transition-all hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.2)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 onClick={handleCreateRoom}
                 disabled={isLoading || !yourName.trim()}
               >

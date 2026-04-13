@@ -7,7 +7,7 @@ export function CustomFooter(){
         <div className="container mx-auto flex flex-col items-center gap-4 px-4 py-8 sm:flex-row sm:justify-between">
     
         <div className=' w-[200px] text-center '>
-            <span className="text-sm font-semibold text-[rgb(0,255,255)]">PlannIt</span>
+            <span className="text-sm font-semibold text-neon">PlannIt</span>
         </div>
 
         <div className=' w-[200px] text-center '>

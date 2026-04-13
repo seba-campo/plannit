@@ -18,6 +18,9 @@ body {
 
 @layer base {
   :root {
+    --neon: 0 255 255;
+    --neon-hover: 0 220 220;
+
     --background: 224 71% 4%;
     --foreground: 213 31% 91%;
 
@@ -51,6 +54,9 @@ body {
   }
 
   .dark {
+    --neon: 0 255 255;
+    --neon-hover: 0 220 220;
+
     --background: 224 71% 4%;
     --foreground: 213 31% 91%;
 
@@ -152,10 +158,10 @@ body {
 @keyframes circuitGlow {
   0%,
   100% {
-    box-shadow: 0 0 5px rgba(0, 255, 255, 0.2), 0 0 10px rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 5px rgb(var(--neon) / 0.2), 0 0 10px rgb(var(--neon) / 0.1);
   }
   50% {
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgb(var(--neon) / 0.4), 0 0 20px rgb(var(--neon) / 0.2);
   }
 }
 
@@ -190,8 +196,8 @@ body {
 .tech-grid {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+  background-image: linear-gradient(rgb(var(--neon) / 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--neon) / 0.03) 1px, transparent 1px),
     linear-gradient(rgba(59, 130, 246, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 130, 246, 0.02) 1px, transparent 1px);
   background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
@@ -207,7 +213,7 @@ body {
 
 .circuit-line {
   position: absolute;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.6), rgba(59, 130, 246, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgb(var(--neon) / 0.6), rgba(59, 130, 246, 0.4), transparent);
   animation: dataFlow 20s linear infinite;
 }
 
@@ -244,7 +250,7 @@ body {
   width: 40px;
   height: 40px;
   background: transparent;
-  border: 1px solid rgba(0, 255, 255, 0.2);
+  border: 1px solid rgb(var(--neon) / 0.2);
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   animation: hexFloat 25s ease-in-out infinite;
 }
@@ -271,7 +277,7 @@ body {
 .neon-orb {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 100%);
+  background: radial-gradient(circle, rgb(var(--neon) / 0.1) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 100%);
   animation: neonPulse 12s ease-in-out infinite;
 }
 
@@ -303,7 +309,7 @@ body {
   position: absolute;
   width: 6px;
   height: 6px;
-  background: rgba(0, 255, 255, 0.6);
+  background: rgb(var(--neon) / 0.6);
   border-radius: 50%;
   animation: circuitGlow 8s ease-in-out infinite;
 }
@@ -315,7 +321,7 @@ body {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: rgba(0, 255, 255, 0.1);
+  background: rgb(var(--neon) / 0.1);
   border-radius: 50%;
   animation: neonPulse 6s ease-in-out infinite;
 }
@@ -350,7 +356,7 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.8), transparent);
+  background: linear-gradient(90deg, transparent, rgb(var(--neon) / 0.8), transparent);
   animation: scanLine 30s linear infinite;
   filter: blur(0.5px);
 }
@@ -394,8 +400,8 @@ body {
 
 /* Enhanced card effects */
 .tech-card-glow:hover {
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), 0 0 40px rgba(59, 130, 246, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  border-color: rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgb(var(--neon) / 0.1), 0 0 40px rgba(59, 130, 246, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-color: rgb(var(--neon) / 0.3);
 }
 
 /* Custom Scrollbar */
@@ -409,11 +415,11 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 255, 0.2);
+  background: rgb(var(--neon) / 0.2);
   border-radius: 3px;
   transition: background 0.3s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 255, 0.4);
+  background: rgb(var(--neon) / 0.4);
 }

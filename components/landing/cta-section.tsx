@@ -15,7 +15,7 @@ export function CTASection() {
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button
             size="lg"
-            className="group h-14 bg-[rgb(0,255,255)] px-10 text-base font-semibold text-background hover:bg-[rgb(0,220,220)] hover:shadow-lg hover:shadow-[rgba(0,255,255,0.25)]"
+            className="group h-14 bg-neon px-10 text-base font-semibold text-background hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.25)]"
             asChild
           >
             <Link href="/create">
@@ -26,7 +26,7 @@ export function CTASection() {
           <Button
             size="lg"
             variant="outline"
-            className="h-14 border-[rgba(0,255,255,0.3)] bg-transparent px-10 text-base font-semibold text-foreground hover:border-[rgba(0,255,255,0.5)] hover:bg-[rgba(0,255,255,0.05)]"
+            className="h-14 border-neon/30 bg-transparent px-10 text-base font-semibold text-foreground hover:border-neon/50 hover:bg-neon/5"
             asChild
           >
             <Link href="/join">

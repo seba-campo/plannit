@@ -9,21 +9,21 @@ interface FeatureCardProps {
 
 function FeatureCard({ icon: Icon, title, description, comingSoon = false }: FeatureCardProps) {
   return (
-    <div 
+    <div
       className={`group relative flex flex-col gap-4 rounded-2xl border p-8 transition-all duration-500 ${
-        comingSoon 
-          ? "border-[rgba(0,255,255,0.1)] bg-[rgba(0,255,255,0.02)] opacity-50" 
-          : "border-[rgba(0,255,255,0.15)] bg-[rgba(0,255,255,0.03)] hover:border-[rgba(0,255,255,0.3)] hover:bg-[rgba(0,255,255,0.05)]"
+        comingSoon
+          ? "border-neon/10 bg-neon/[2%] opacity-50"
+          : "border-neon/15 bg-neon/[3%] hover:border-neon/30 hover:bg-neon/5"
       }`}
     >
       <div className="flex items-center gap-4">
         <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
-          comingSoon ? "bg-[rgba(0,255,255,0.05)]" : "bg-[rgba(0,255,255,0.1)]"
+          comingSoon ? "bg-neon/5" : "bg-neon/10"
         }`}>
-          <Icon className={`h-6 w-6 ${comingSoon ? "text-[rgba(0,255,255,0.3)]" : "text-[rgb(0,255,255)]"}`} />
+          <Icon className={`h-6 w-6 ${comingSoon ? "text-neon/30" : "text-neon"}`} />
         </div>
         {comingSoon && (
-          <span className="rounded-full border border-[rgba(0,255,255,0.15)] bg-[rgba(0,255,255,0.05)] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[rgba(0,255,255,0.5)]">
+          <span className="rounded-full border border-neon/15 bg-neon/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-neon/50">
             Coming soon
           </span>
         )}
@@ -78,7 +78,7 @@ export function FeaturesSection() {
     <section className="relative z-10 px-4 py-32">
       <div className="mx-auto max-w-6xl">
         <div className="mb-20 flex flex-col items-center gap-4 text-center">
-          <span className="text-sm font-medium uppercase tracking-[0.2em] text-[rgb(0,255,255)]">
+          <span className="text-sm font-medium uppercase tracking-[0.2em] text-neon">
             Features
           </span>
           <h2 className="text-4xl font-bold text-foreground sm:text-5xl">

@@ -47,7 +47,7 @@ const GameBoard = ({
     }
 
     return (
-        <Card className="mb-8 bg-accent/50 border-accent" style={{ position: "relative", overflow: "hidden" }}>
+        <Card className="mb-8 bg-neon/5 border-neon/15 backdrop-blur-md" style={{ position: "relative", overflow: "hidden" }}>
             <CardContent className="p-6" style={{ position: "relative", zIndex: 1 }}>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
                     <div>
@@ -106,8 +106,8 @@ const GameBoard = ({
                     ))}
                 </div>
                 {isSpectator() && (
-                    <Alert className="mt-4 border-blue-500 bg-blue-500/10">
-                        <AlertDescription className="text-blue-400">
+                    <Alert className="mt-4 border-neon/40 bg-neon/5">
+                        <AlertDescription className="text-neon-hover">
                             You're in spectator mode. You can watch the voting but cannot participate.
                         </AlertDescription>
                     </Alert>

@@ -11,7 +11,7 @@ export const HeaderComponent = () => {
             <Button
                 variant='ghost'
                 size='sm'
-                className="text-2xl font-bold text-[rgb(0,255,255)] hover:bg-transparent hover:text-[rgb(0,255,255)] active:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="text-2xl font-bold text-neon hover:bg-transparent hover:text-neon active:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 asChild
             >
                 <Link href={'/'}>PlannIt</Link>
@@ -29,7 +29,7 @@ export const HeaderComponent = () => {
             </Button>
             <Button
               size="sm"
-              className="bg-[rgb(0,255,255)] text-background hover:bg-[rgb(0,220,220)]"
+              className="bg-neon text-background hover:bg-neon-hover"
               asChild
             >
               <Link href="/create">

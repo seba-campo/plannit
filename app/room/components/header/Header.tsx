@@ -29,7 +29,7 @@ const HeaderInformation = ({
         <div className="container mx-auto px-4">
             {/* Primera fila: Logo y Exit Button */}
             <div className="flex items-center justify-between mb-3 sm:mb-0">
-                <Link href="/" className="text-2xl font-bold text-primary">
+                <Link href="/" className="text-2xl font-bold text-neon">
                     PlannIt
                 </Link>
 
@@ -48,7 +48,7 @@ const HeaderInformation = ({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-center">
                 {/* Room Info */}
                 <div className="text-center sm:text-left order-1">
-                    <div className="text-sm text-blue-400">Room: {roomId}</div>
+                    <div className="text-sm text-neon">Room: {roomId}</div>
                     <div className="text-xs text-muted-foreground">Round {currentRound}</div>
                 </div>
 
@@ -63,7 +63,10 @@ const HeaderInformation = ({
                     <span className="text-sm text-muted-foreground text-center sm:text-right">
                         Playing as: {roomSession?.playerName}
                     </span>
-                    <Badge className="self-center sm:self-auto" variant={isSpectator() ? "outline" : isCreator() ? "default" : "secondary"}>
+                    <Badge
+                        className={`self-center sm:self-auto ${isCreator() ? "bg-neon text-background hover:bg-neon-hover border-0" : ""}`}
+                        variant={isSpectator() ? "outline" : isCreator() ? "default" : "secondary"}
+                    >
                         {currentUserType === "admin" ? "Creator" : currentUserType === "spectator" ? "Spectator" : "Player"}
                     </Badge>
                 </div>

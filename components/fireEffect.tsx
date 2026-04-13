@@ -9,10 +9,10 @@ export default function FireEffect() {
   const animationRef = useRef<number | null>(null);
   const particlesRef = useRef<any[]>([]);
   const paletteBase = [
-    { r: 255, g: 255, b: 180 }, // Amarillo claro
-    { r: 255, g: 200, b: 40 },  // Amarillo fuerte
-    { r: 255, g: 120, b: 0 },   // Naranja brillante
-    { r: 255, g: 62, b: 0 },    // Rojo-naranja
+    { r: 0, g: 255, b: 255 },   // Cyan puro
+    { r: 0, g: 210, b: 255 },   // Azul cielo
+    { r: 80, g: 230, b: 255 },  // Cyan claro
+    { r: 0, g: 255, b: 200 },   // Cyan-verde
     { r: 255, g: 255, b: 255 }  // Blanco para brillos
   ];
   const paletteRef = useRef([...paletteBase]);

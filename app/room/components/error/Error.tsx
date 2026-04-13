@@ -6,7 +6,7 @@ import Link from "next/link";
 const Error = ({errorMessage}: {errorMessage: string}) => {
     return (
     <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-accent/50 border-accent">
+        <Card className="w-full max-w-md bg-neon/5 border-neon/15 backdrop-blur-md">
             <CardContent className="p-6">
             <Alert className="border-red-500 bg-red-500/10">
                 <AlertDescription className="text-red-400">{errorMessage}</AlertDescription>

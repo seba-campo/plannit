@@ -55,7 +55,7 @@ export function FloatingCards() {
       <div 
         className="absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-40 blur-[80px] md:h-[400px] md:w-[400px]"
         style={{ 
-          background: "radial-gradient(circle, rgba(0,255,255,0.4) 0%, rgba(59,130,246,0.2) 50%, transparent 70%)" 
+          background: "radial-gradient(circle, rgb(var(--neon) / 0.4) 0%, rgba(59,130,246,0.2) 50%, transparent 70%)"
         }}
       />
       
@@ -83,32 +83,32 @@ export function FloatingCards() {
             >
             {/* Card face */}
             <div 
-              className="relative flex h-full w-full flex-col items-center justify-center rounded-xl border border-[rgba(0,255,255,0.3)] bg-[rgba(10,20,40,0.8)] backdrop-blur-md transition-all duration-300 hover:border-[rgba(0,255,255,0.6)]"
+              className="relative flex h-full w-full flex-col items-center justify-center rounded-xl border border-neon/30 bg-[rgba(10,20,40,0.8)] backdrop-blur-md transition-all duration-300 hover:border-neon/60"
               style={{
-                boxShadow: "0 0 30px rgba(0,255,255,0.15), 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1)",
+                boxShadow: "0 0 30px rgb(var(--neon) / 0.15), 0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1)",
               }}
             >
               {/* Card inner glow */}
               <div 
                 className="absolute inset-0 rounded-xl opacity-30"
                 style={{
-                  background: "linear-gradient(135deg, rgba(0,255,255,0.1) 0%, transparent 50%, rgba(59,130,246,0.05) 100%)"
+                  background: "linear-gradient(135deg, rgb(var(--neon) / 0.1) 0%, transparent 50%, rgba(59,130,246,0.05) 100%)"
                 }}
               />
               
               {/* Card value */}
               <span 
-                className="relative text-4xl font-bold text-[rgb(0,255,255)] md:text-5xl"
+                className="relative text-4xl font-bold text-neon md:text-5xl"
                 style={{
-                  textShadow: "0 0 20px rgba(0,255,255,0.5)"
+                  textShadow: "0 0 20px rgb(var(--neon) / 0.5)"
                 }}
               >
                 {card.value}
               </span>
               
               {/* Card corner marks */}
-              <span className="absolute left-3 top-3 text-xs text-[rgba(0,255,255,0.4)]">{card.value}</span>
-              <span className="absolute bottom-3 right-3 rotate-180 text-xs text-[rgba(0,255,255,0.4)]">{card.value}</span>
+              <span className="absolute left-3 top-3 text-xs text-neon/40">{card.value}</span>
+              <span className="absolute bottom-3 right-3 rotate-180 text-xs text-neon/40">{card.value}</span>
             </div>
             </div>
           </div>

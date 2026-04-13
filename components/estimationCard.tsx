@@ -14,11 +14,11 @@ export default function EstimationCard({ value, onClick, disabled = false, isSel
   return (
     <div
       className={cn(
-        "aspect-[2/3] bg-gradient-to-br rounded-xl shadow-md cursor-pointer flex items-center justify-center text-white font-bold text-2xl transition-all relative overflow-hidden",
+        "aspect-[2/3] rounded-xl shadow-md cursor-pointer flex items-center justify-center font-bold text-2xl transition-all relative overflow-hidden border",
         isSelected
-          ? "from-blue-500 to-blue-700 ring-2 ring-blue-400 ring-offset-2 ring-offset-background"
-          : "from-blue-600 to-blue-800",
-        disabled ? "opacity-70 cursor-not-allowed" : "hover:shadow-lg hover:scale-105 active:scale-95",
+          ? "bg-neon/[12%] border-neon ring-2 ring-neon/50 ring-offset-2 ring-offset-background text-neon"
+          : "bg-neon/[4%] border-neon/20 text-white hover:border-neon/50 hover:bg-neon/[8%]",
+        disabled ? "opacity-70 cursor-not-allowed" : "hover:shadow-[0_0_20px_rgb(var(--neon)_/_0.15)] hover:scale-105 active:scale-95",
       )}
       onClick={disabled ? undefined : onClick}
     >

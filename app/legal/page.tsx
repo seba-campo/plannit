@@ -88,7 +88,7 @@ export default function LegalPage() {
       <main className="relative z-10 container mx-auto max-w-3xl px-4 py-12 md:py-16">
         {/* Page Header */}
         <div className="mb-10 border-b border-accent/30 pb-8">
-          <span className="mb-3 block text-xs font-medium uppercase tracking-widest text-[rgb(0,255,255)]">
+          <span className="mb-3 block text-xs font-medium uppercase tracking-widest text-neon">
             Legal
           </span>
           <h1 className="mb-3 text-3xl font-bold text-foreground sm:text-4xl">
@@ -111,7 +111,7 @@ export default function LegalPage() {
           aria-label="Table of contents"
           className="mb-12 rounded-xl border border-accent/30 bg-card/30 p-5 backdrop-blur-sm"
         >
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[rgb(0,255,255)]">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-neon">
             Contents
           </p>
           <ol className="space-y-1.5">

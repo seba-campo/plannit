@@ -20,14 +20,15 @@ const HistoryCard = ({ card, isHistory = false, votingValue }: HistoryCardProps)
                 "relative p-4 rounded-lg border-2 transition-all duration-500",
                 isHistory
                     ? "bg-muted/30 border-muted opacity-60 hover:opacity-80"
-                    : "bg-accent/60 backdrop-blur-md border-accent tech-card-glow"
+                    : "bg-neon/[7%] backdrop-blur-md border-neon/30 shadow-[0_0_15px_rgb(var(--neon)_/_0.05)]"
             )}
         >
             {/* Status Badge */}
             <div className="flex items-center justify-between mb-3 cursor-pointer">
                 <Badge
+                    variant="outline"
                     className={cn(
-                        "flex items-center gap-1.5 px-2.5 py-1 border",
+                        "flex items-center gap-1.5 px-2.5 py-1",
                         getStatusColor(card.status)
                     )}
                 >
@@ -43,7 +44,7 @@ const HistoryCard = ({ card, isHistory = false, votingValue }: HistoryCardProps)
                         "flex items-center justify-center h-8 w-8 rounded-full font-bold text-sm",
                         isHistory
                             ? "bg-muted text-muted-foreground"
-                            : "bg-primary/20 text-primary border border-primary/30"
+                            : "bg-neon/10 text-neon border border-neon/30"
                     )}>
                         {votingValue}
                     </div>
@@ -67,7 +68,7 @@ const HistoryCard = ({ card, isHistory = false, votingValue }: HistoryCardProps)
                         "inline-flex items-center gap-1.5 text-sm transition-colors group",
                         isHistory
                             ? "text-muted-foreground/70 hover:text-muted-foreground"
-                            : "text-primary/80 hover:text-primary"
+                            : "text-neon/70 hover:text-neon"
                     )}
                 >
                     <span className="truncate max-w-[200px]">{card.url}</span>

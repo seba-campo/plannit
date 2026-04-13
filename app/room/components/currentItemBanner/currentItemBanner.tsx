@@ -22,7 +22,7 @@ export default function CurrentItemBanner({
     const hookAverageScore = averageScore ?? undefined;
 
     return (
-        <Card className="border-accent transition-all bg-accent/50 backdrop-blur-md rounded-lg border text-card-foreground shadow-sm bg">
+        <Card className="transition-all bg-neon/5 backdrop-blur-md rounded-lg border border-neon/15 text-card-foreground shadow-sm">
             <div className="space-y-1 pb-3 pl-6 pt-2 mt-4 block">
                 <h2 className="text-xl font-semibold flex items-center">
                     Currently voting

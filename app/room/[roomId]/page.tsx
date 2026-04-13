@@ -80,7 +80,7 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
   return (
     <div className="min-h-screen flex flex-col">
 
-      <header className="border-b border-accent py-4">
+      <header className="border-b border-neon/15 py-4">
         <HeaderInformation
           roomId={roomId}
           currentRound={currentRound}

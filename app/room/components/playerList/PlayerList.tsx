@@ -40,14 +40,14 @@ const PlayerList = ({
     }
 
     if (isMe) {
-      return base + "border-primary/40 bg-primary/5 ring-1 ring-primary/20";
+      return base + "border-neon/40 bg-neon/5 ring-1 ring-neon/20";
     }
 
-    return base + "border-accent bg-card/50 hover:border-primary/20";
+    return base + "border-neon/15 bg-card/50 hover:border-neon/40";
   }
 
   return (
-    <Card className="bg-accent/50 border-accent">
+    <Card className="bg-neon/5 border-neon/15 backdrop-blur-md">
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold flex items-center">
@@ -69,7 +69,7 @@ const PlayerList = ({
           {revealed && (
             <div className="ml-4 border-l pl-4">
               <div className="text-xs text-muted-foreground uppercase tracking-wider">Average</div>
-              <div className="text-2xl font-bold text-primary">{average}</div>
+              <div className="text-2xl font-bold text-neon">{average}</div>
             </div>
           )}
         </div>
@@ -105,7 +105,7 @@ const PlayerList = ({
                       <span className="text-sm font-medium">Watching</span>
                     </div>
                   ) : revealed ? (
-                    <div className="text-3xl font-bold text-primary animate-in zoom-in duration-300">
+                    <div className="text-3xl font-bold text-neon animate-in zoom-in duration-300">
                       {player.vote === "0" ? "💤" : player.vote}
                     </div>
                   ) : player.hasVoted ? (

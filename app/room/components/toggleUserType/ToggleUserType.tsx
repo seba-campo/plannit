@@ -18,7 +18,7 @@ const ToggleUserType = ({
     isRevealed
 }: IToggleUserType) => {
     return (
-        <Card className="mb-4 bg-accent/50 border-accent">
+        <Card className="mb-4 bg-neon/5 border-neon/15 backdrop-blur-md">
             <CardContent className="p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
