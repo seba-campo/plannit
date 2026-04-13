@@ -193,7 +193,7 @@ export default function CreateRoom() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="history-points">Story Points</SelectItem>
+                      <SelectItem value="history-points">Story Points (Fibonacci)</SelectItem>
                       <SelectItem value="t-shirt">T-Shirt Sizing</SelectItem>
                     </SelectContent>
                   </Select>

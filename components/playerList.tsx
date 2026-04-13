@@ -20,10 +20,11 @@ interface PlayerListProps {
   currentPlayer: string
   onPlayerChange: (id: string) => void
   revealed: boolean
+  scaleValues?: (string | number)[]
 }
 
-export default function PlayerList({ players, currentPlayer, onPlayerChange, revealed }: PlayerListProps) {
-  const average = calculateAverage(players);
+export default function PlayerList({ players, currentPlayer, onPlayerChange, revealed, scaleValues = [] }: PlayerListProps) {
+  const average = calculateAverage(players, scaleValues);
 
   if (!players || players.length === 0) {
     return (

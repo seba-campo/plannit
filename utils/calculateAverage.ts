@@ -1,12 +1,16 @@
 import { Player } from "@/components/playerList"
 
-const isNumericVoting = (scaleValues: string[]): boolean =>
-    scaleValues.every((v) => !isNaN(Number(v)) || v === "?")
+const SPECIAL_SCALE_VALUES = ["?", "☕"]
+
+const isNumericVoting = (scaleValues: (string | number)[]): boolean =>
+    scaleValues
+        .filter((v) => !SPECIAL_SCALE_VALUES.includes(String(v)))
+        .every((v) => !isNaN(Number(v)))
 
 const calcNumericAverage = (players: Player[]): string => {
     const numericVotes = players
-        .filter((p) => p.vote && p.vote !== "?" && p.vote !== "0" && p.isOnline && p.userType !== "spectator")
-        .map((p) => Number.parseInt(p.vote as string))
+        .filter((p) => p.hasVoted && p.vote && p.vote !== "?" && p.vote !== "0")
+        .map((p) => Number(p.vote))
         .filter((vote) => !isNaN(vote))
 
     if (numericVotes.length === 0) return "-"
@@ -14,11 +18,12 @@ const calcNumericAverage = (players: Player[]): string => {
     return (sum / numericVotes.length).toFixed(1)
 }
 
-const calcTshirtMode = (players: Player[], scaleValues: string[]): string => {
+const calcTshirtMode = (players: Player[], scaleValues: (string | number)[]): string => {
+    const stringScaleValues = scaleValues.map(String)
     const validVotes = players
-        .filter((p) => p.vote && p.vote !== "?" && p.vote !== "0" && p.isOnline && p.userType !== "spectator")
+        .filter((p) => p.hasVoted && p.vote && p.vote !== "?" && p.vote !== "0")
         .map((p) => p.vote as string)
-        .filter((v) => scaleValues.includes(v))
+        .filter((v) => stringScaleValues.includes(v))
 
     if (validVotes.length === 0) return "-"
 
@@ -34,11 +39,11 @@ const calcTshirtMode = (players: Player[], scaleValues: string[]): string => {
 
     // On tie, pick the element with the highest index in scaleValues (i.e. the "largest")
     return tied.reduce((highest, current) =>
-        scaleValues.indexOf(current) > scaleValues.indexOf(highest) ? current : highest
+        stringScaleValues.indexOf(current) > stringScaleValues.indexOf(highest) ? current : highest
     )
 }
 
-export const calculateAverage = (players: Player[], scaleValues: string[] = []): string => {
+export const calculateAverage = (players: Player[], scaleValues: (string | number)[] = []): string => {
     if (scaleValues.length > 0 && !isNumericVoting(scaleValues)) {
         return calcTshirtMode(players, scaleValues)
     }

@@ -11,7 +11,7 @@ interface IGameBoard {
     revealed: boolean;
     userRole: "admin" | "player";
     userStatus: "player" | "spectator";
-    average: number | string;
+    average: string;
     currentPlayerVote: string | null;
     atLeastOnePlayerVoted: boolean;
     setUserStatus: (status: "player" | "spectator") => void;
@@ -26,8 +26,8 @@ const GameBoard = ({
     average,
     currentPlayerVote,
     atLeastOnePlayerVoted,
-    setUserStatus,
     scaleValues,
+    setUserStatus,
 }: IGameBoard) => {
     const {
         handleCardSelect,
@@ -101,7 +101,7 @@ const GameBoard = ({
                             value={value}
                             onClick={() => handleCardSelect(value, revealed)}
                             disabled={revealed || isSpectator()}
-                            isSelected={currentPlayerVote === value}
+                            isSelected={String(currentPlayerVote) === String(value)}
                         />
                     ))}
                 </div>

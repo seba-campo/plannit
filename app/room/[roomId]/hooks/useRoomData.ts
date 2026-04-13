@@ -59,7 +59,10 @@ export const useRoomData = (roomId: string, isSessionReady: boolean, roomCode?: 
         unsubscribeRef.current = [roomUnsubscribe, playersUnsubscribe]
     }, [])
 
-    const average = calculateAverage(players, scaleValues)
+    const average = revealed && roomData?.averageScore != null
+        ? String(roomData.averageScore)
+        : calculateAverage(players, scaleValues)
+
     const allVoted = players.filter((p) => p.isOnline && p.currentStatus !== "spectator").every((player) => player.hasVoted)
 
     const getActivePlayersCount = () => {
@@ -132,17 +135,17 @@ export const useRoomData = (roomId: string, isSessionReady: boolean, roomCode?: 
         roomData,
         revealed,
         gameState,
-        setGameState,
         currentRound,
         isLoading,
         atLeastOnePlayerVoted,
         isConnected,
         average,
         allVoted,
+        scaleValues,
+        dataError,
+        setGameState,
         getActivePlayersCount,
         getSpectatorsCount,
         getRoomLongId,
-        scaleValues,
-        dataError
     }
 }

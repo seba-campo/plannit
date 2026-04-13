@@ -177,11 +177,12 @@ export class FirebaseRoomService {
 
   // Reveal all votes
   public async revealVotes(roomId: string, average: number | string): Promise<void> {
-    const gameStateRef = ref(this.database, `planningRooms/${roomId}/gameState`);
-    const isRevealedRef = ref(this.database, `planningRooms/${roomId}/isRevealed`);
-
-    await this.setAverageScore(roomId, average);
-    await Promise.all([update(gameStateRef, { "gameState": "revealed" }), update(isRevealedRef, { "isRevealed": true })])
+    const roomRef = ref(this.database, `planningRooms/${roomId}`);
+    await update(roomRef, {
+      averageScore: average,
+      gameState: "revealed",
+      isRevealed: true,
+    })
   }
 
   public async setAverageScore(roomId: string, average: number | string): Promise<void> {
