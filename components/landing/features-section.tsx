@@ -1,39 +1,61 @@
 import { Zap, Shield, BarChart3, Users, Clock, Plus } from "lucide-react"
 
-interface FeatureCardProps {
+interface FeatureRowProps {
   icon: React.ElementType
   title: string
   description: string
+  index: number
   comingSoon?: boolean
+  isNew?: boolean
 }
 
-function FeatureCard({ icon: Icon, title, description, comingSoon = false }: FeatureCardProps) {
+function FeatureRow({ icon: Icon, title, description, index, comingSoon = false, isNew = false }: FeatureRowProps) {
   return (
     <div
-      className={`group relative flex flex-col gap-4 rounded-2xl border p-8 transition-all duration-500 ${
-        comingSoon
-          ? "border-neon/10 bg-neon/[2%] opacity-50"
-          : "border-neon/15 bg-neon/[3%] hover:border-neon/30 hover:bg-neon/5"
+      className={`group relative border-b border-white/5 py-8 pl-10 pr-4 last:border-b-0 transition-colors duration-500 ${
+        comingSoon ? "opacity-40" : "hover:bg-neon/[2%]"
       }`}
     >
-      <div className="flex items-center gap-4">
-        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
-          comingSoon ? "bg-neon/5" : "bg-neon/10"
-        }`}>
-          <Icon className={`h-6 w-6 ${comingSoon ? "text-neon/30" : "text-neon"}`} />
+      {/* Left accent bar */}
+      <div
+        className={`absolute left-0 top-0 h-full w-0.5 transition-all duration-500 ${
+          comingSoon
+            ? "bg-neon/10"
+            : "bg-neon/20 group-hover:bg-neon/80 group-hover:shadow-[0_0_12px_2px_rgba(0,255,255,0.45)]"
+        }`}
+      />
+
+      <div className="flex items-center gap-8">
+        {/* Number */}
+        <span className="w-7 shrink-0 font-mono text-xs font-medium tracking-widest text-neon/25 transition-colors duration-500 group-hover:text-neon/55">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+
+        {/* Content */}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+            {comingSoon && (
+              <span className="rounded-full border border-neon/15 bg-neon/5 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-neon/50">
+                Coming soon
+              </span>
+            )}
+            {isNew && (
+              <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">
+                New
+              </span>
+            )}
+          </div>
+          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{description}</p>
         </div>
-        {comingSoon && (
-          <span className="rounded-full border border-neon/15 bg-neon/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-neon/50">
-            Coming soon
-          </span>
-        )}
+
+        {/* Icon */}
+        <Icon
+          className={`h-5 w-5 shrink-0 transition-all duration-500 ${
+            comingSoon ? "text-neon/20" : "text-neon/30 group-hover:text-neon/70"
+          }`}
+        />
       </div>
-      <h3 className={`text-xl font-semibold ${comingSoon ? "text-foreground/40" : "text-foreground"}`}>
-        {title}
-      </h3>
-      <p className={`text-sm leading-relaxed ${comingSoon ? "text-muted-foreground/40" : "text-muted-foreground"}`}>
-        {description}
-      </p>
     </div>
   )
 }
@@ -61,34 +83,30 @@ export function FeaturesSection() {
       description: "Stakeholders can watch without voting, keeping sessions focused and efficient.",
     },
     {
-      icon: Clock,
-      title: "Session History",
-      description: "Review past estimations to track patterns and improve accuracy over time.",
-      comingSoon: true,
-    },
-    {
       icon: Plus,
       title: "Custom Card Sets",
       description: "Fibonacci, T-shirt sizes, or create your own. Adapt to your team's workflow.",
+      isNew: true,
+    },
+    {
+      icon: Clock,
+      title: "Session History",
+      description: "Review past estimations to track patterns and improve accuracy over time.",
       comingSoon: true,
     },
   ]
 
   return (
     <section className="relative z-10 px-4 py-32">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-3xl">
         <div className="mb-20 flex flex-col items-center gap-4 text-center">
-          <span className="text-sm font-medium uppercase tracking-[0.2em] text-neon">
-            Features
-          </span>
-          <h2 className="text-4xl font-bold text-foreground sm:text-5xl">
-            Everything your team needs
-          </h2>
+          <span className="text-sm font-medium uppercase tracking-[0.2em] text-neon">Features</span>
+          <h2 className="text-4xl font-bold text-foreground sm:text-5xl">Everything your team needs</h2>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <FeatureCard key={feature.title} {...feature} />
+        <div>
+          {features.map((feature, index) => (
+            <FeatureRow key={feature.title} {...feature} index={index} />
           ))}
         </div>
       </div>
