@@ -20,6 +20,8 @@ const config = {
     },
     extend: {
       colors: {
+        neon: "rgb(var(--neon) / <alpha-value>)",
+        "neon-hover": "rgb(var(--neon-hover) / <alpha-value>)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

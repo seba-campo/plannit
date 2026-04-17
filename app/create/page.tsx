@@ -2,18 +2,40 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Copy, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { apiClient, getErrorMessage, type CreateRoomResponse } from "@/lib/api"
+import { apiClient, getErrorMessage } from "@/lib/api-client/api"
+import { type CreateRoomResponse, type VotingTypeKey } from "@/lib/api-client/DTOs"
+import ParticleField from "@/components/particleField"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card"
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  Copy, 
+  Loader2, 
+  Plus 
+} from "lucide-react"
 
 export default function CreateRoom() {
   const [yourName, setYourName] = useState("")
+  const [votingType, setVotingType] = useState<VotingTypeKey>("history-points")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [roomData, setRoomData] = useState<CreateRoomResponse | null>(null)
@@ -25,14 +47,21 @@ export default function CreateRoom() {
     setIsLoading(true)
     setError(null)
 
+    const sanitizedName = yourName.trim().replace(/[<>"'`\\]/g, "").slice(0, 30)
+    if (!sanitizedName) {
+      setError("Please enter a valid name.")
+      setIsLoading(false)
+      return
+    }
+
     try {
       const response = await apiClient.createRoom({
-        userData: {name: yourName.trim()}
+        userData: { name: sanitizedName },
+        voteType: votingType,
       })
 
       setRoomData(response)
 
-      // Store room data in localStorage for the session
       localStorage.setItem(
         "currentRoom",
         JSON.stringify({
@@ -69,70 +98,36 @@ export default function CreateRoom() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Neon Tech Background */}
+    <div className="relative min-h-screen flex flex-col overflow-hidden">
+      {/* Background layers */}
+      <div className="fixed inset-0 -z-20 bg-background" />
       <div className="fixed inset-0 -z-10">
-        {/* Base gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950/30 to-slate-950"></div>
-
-        {/* Tech grid overlay */}
-        <div className="tech-grid"></div>
-
-        {/* Neon elements */}
-        <div className="absolute inset-0">
-          {/* Circuit lines */}
-          <div className="circuit-lines">
-            <div className="circuit-line circuit-line-1"></div>
-            <div className="circuit-line circuit-line-2"></div>
-            <div className="circuit-line circuit-line-3"></div>
-          </div>
-
-          {/* Hexagonal elements */}
-          <div className="hex-container">
-            <div className="hex-element hex-1"></div>
-            <div className="hex-element hex-2"></div>
-            <div className="hex-element hex-3"></div>
-          </div>
-
-          {/* Neon orbs */}
-          <div className="neon-orb neon-orb-1"></div>
-          <div className="neon-orb neon-orb-2"></div>
-
-          {/* Data nodes */}
-          <div className="data-nodes">
-            <div className="data-node node-1"></div>
-            <div className="data-node node-2"></div>
-            <div className="data-node node-3"></div>
-            <div className="data-node node-4"></div>
-          </div>
-
-          {/* Connection lines */}
-          <div className="connection-lines">
-            <div className="connection-line conn-1"></div>
-            <div className="connection-line conn-2"></div>
-            <div className="connection-line conn-3"></div>
-          </div>
-
-          {/* Scanning line */}
-          <div className="scan-line"></div>
-        </div>
+        <div className="tech-grid" />
       </div>
+      <ParticleField />
 
-      <header className="border-b border-accent py-4">
-        <div className="container mx-auto px-4 flex items-center">
-          <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+      {/* Header */}
+      <header className="relative z-20 border-b border-accent/50 bg-background/80 backdrop-blur-lg">
+        <div className="container mx-auto flex items-center px-4 py-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
             Back to home
           </Link>
-          <h1 className="text-2xl font-bold mx-auto text-primary">PlannIt</h1>
+          <h1 className="mx-auto text-2xl font-bold text-neon">PlannIt</h1>
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-accent/50 border-accent">
+      {/* Main */}
+      <main className="relative z-10 flex flex-1 items-center justify-center p-4">
+        <Card className="w-full max-w-md border-accent/50 bg-card/40 backdrop-blur-md">
           <CardHeader>
-            <CardTitle>{roomData ? "Room Created!" : "Create a New Room"}</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-foreground">
+              {roomData ? "Room Created!" : "Create a New Room"}
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
               {roomData
                 ? "Share this code with your team members to join"
                 : "Set up a new planning poker session for your team"}
@@ -141,7 +136,7 @@ export default function CreateRoom() {
 
           <CardContent>
             {error && (
-              <Alert className="mb-4 border-red-500 bg-red-500/10">
+              <Alert className="mb-4 border-red-500/50 bg-red-500/10">
                 <AlertDescription className="text-red-400">{error}</AlertDescription>
               </Alert>
             )}
@@ -149,29 +144,33 @@ export default function CreateRoom() {
             {roomData ? (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Room Code</Label>
-                  <div className="p-4 bg-background rounded-md flex justify-between items-center">
-                    <span className="font-mono text-xl tracking-wider text-primary">{roomData.data.room.roomDocCode}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                  <Label className="text-sm font-medium text-muted-foreground">Room Code</Label>
+                  <div className="flex items-center justify-between rounded-lg border border-accent/50 bg-background/60 p-4">
+                    <span className="font-mono text-xl tracking-wider text-neon">
+                      {roomData.data.room.roomDocCode}
+                    </span>
+                    <button
                       onClick={handleCopyCode}
-                      className={copySuccess ? "text-green-400" : ""}
+                      className={`rounded-md p-2 transition-colors hover:bg-accent/50 ${
+                        copySuccess ? "text-green-400" : "text-muted-foreground hover:text-foreground"
+                      }`}
                     >
                       <Copy className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </div>
-                  {copySuccess && <p className="text-sm text-green-400">Room code copied to clipboard!</p>}
+                  {copySuccess && (
+                    <p className="text-sm text-green-400">Room code copied to clipboard!</p>
+                  )}
                 </div>
 
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-center text-sm text-muted-foreground">
                   Share this code with your team members so they can join your planning session
                 </p>
               </div>
             ) : (
               <form onSubmit={handleCreateRoom} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="your-name">Your Name</Label>
+                  <Label htmlFor="your-name" className="text-muted-foreground">Your Name</Label>
                   <Input
                     id="your-name"
                     placeholder="Your name"
@@ -179,7 +178,25 @@ export default function CreateRoom() {
                     onChange={(e) => setYourName(e.target.value)}
                     disabled={isLoading}
                     required
+                    maxLength={30}
+                    className="border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-neon/30"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground">Scoring Type</Label>
+                  <Select
+                    value={votingType}
+                    onValueChange={(val) => setVotingType(val as VotingTypeKey)}
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger className="border-accent/50 bg-background/60 text-foreground focus:ring-neon/30">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="history-points">Story Points (Fibonacci)</SelectItem>
+                      <SelectItem value="t-shirt">T-Shirt Sizing</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </form>
             )}
@@ -187,24 +204,31 @@ export default function CreateRoom() {
 
           <CardFooter>
             {roomData ? (
-              <Button className="w-full" onClick={handleStartSession}>
+              <button
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-neon px-6 py-3 text-sm font-medium text-background transition-all hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.2)]"
+                onClick={handleStartSession}
+              >
                 Start Session
-              </Button>
+                <ArrowRight className="h-4 w-4" />
+              </button>
             ) : (
-              <Button
-                className="w-full"
+              <button
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-neon px-6 py-3 text-sm font-medium text-background transition-all hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.2)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 onClick={handleCreateRoom}
-                disabled={isLoading  || !yourName.trim()}
+                disabled={isLoading || !yourName.trim()}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Creating Room...
                   </>
                 ) : (
-                  "Create Room"
+                  <>
+                    <Plus className="h-4 w-4" />
+                    Create Room
+                  </>
                 )}
-              </Button>
+              </button>
             )}
           </CardFooter>
         </Card>

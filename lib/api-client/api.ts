@@ -1,50 +1,15 @@
+import {
+  CreateRoomRequest,
+  CreateRoomResponse,
+  GetRoomDetailsResponse,
+  JoinRoomRequest,
+  JoinRoomResponse,
+  SaveGameHistoryRequest,
+  SaveGameHistoryResponse
+} from "./DTOs"
+
 // API configuration and utility functions
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001/api"
-
-export interface CreateRoomRequest {
-    userData: {name: string}
-}
-
-export interface CreateRoomResponse {
-    msesage: string
-    data:{
-      room:{
-        roomDocId: string,
-        roomRtRef: string,
-        roomDocCode: string,
-      },
-      userData:{
-            "hasVoted": boolean,
-            "lastSeen": number,
-            "currentStatus": string,
-            "uniqueId": string,
-            "name": string,
-            "userType": string
-      }
-
-    }
-}
-
-export interface JoinRoomRequest {
-  roomId: string
-  userName: {name: string}
-}
-
-export interface JoinRoomResponse {
-  roomCode: string,
-  rtdbKey: string,
-  userData:{
-    uniqueId: string,
-    name: string,
-    userType: string
-  }
-}
-
-export interface ApiError {
-  message: string
-  code?: string
-  status?: number
-}
 
 class ApiClient {
   private baseUrl: string
@@ -102,8 +67,17 @@ class ApiClient {
     })
   }
 
-  async getRoomDetails(roomCode: string): Promise<JoinRoomResponse> {
-    return this.request<JoinRoomResponse>(`/room/${roomCode}`)
+  async getRoomDetails(roomCode: string): Promise<GetRoomDetailsResponse> {
+    return this.request<GetRoomDetailsResponse>(`/room/${roomCode}`, {
+      method: "GET"
+    })
+  }
+
+  async saveGameHistory(data: SaveGameHistoryRequest): Promise<SaveGameHistoryResponse> {
+    return this.request<SaveGameHistoryResponse>("/room/save-game-history", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    })
   }
 }
 

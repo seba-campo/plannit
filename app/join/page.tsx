@@ -2,18 +2,30 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Loader2, Users } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { apiClient, getErrorMessage, type JoinRoomResponse } from "@/lib/api"
-import { useRoomExitGuard } from "../room/[roomId]/useExitRoom"
+import { apiClient, getErrorMessage } from "@/lib/api-client/api"
+import { type JoinRoomResponse } from "@/lib/api-client/DTOs"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import ParticleField from "@/components/particleField"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card"
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  Loader2, 
+  Users 
+} from "lucide-react"
 
-type CachedSession = { 
+type CachedSession = {
   roomCode: string
 }
 
@@ -23,47 +35,50 @@ export default function JoinRoom() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [roomData, setRoomData] = useState<JoinRoomResponse | null>(null)
-  const router = useRouter();
-  
-  useRoomExitGuard()
-  //Validar si viene el codigo por una redirección directa del /room
-  useEffect(() => {
-    const storage = localStorage.getItem("cachedRoomCode");
-    if(!storage)return
+  const router = useRouter()
 
-    const session : CachedSession = JSON.parse(storage);
+  useEffect(() => {
+    const storage = localStorage.getItem("cachedRoomCode")
+    if (!storage) return
+
+    const session: CachedSession = JSON.parse(storage)
     setRoomCode(session.roomCode)
-  }, []);  
+  }, [])
 
   const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
 
+    const sanitizedName = yourName.trim().replace(/[<>"'`\\]/g, "").slice(0, 30)
+    if (!sanitizedName) {
+      setError("Please enter a valid name.")
+      setIsLoading(false)
+      return
+    }
+
     try {
       const response = await apiClient.joinRoom({
         roomId: roomCode.trim().toUpperCase(),
-        userName: {name: yourName.trim()}
+        userName: { name: sanitizedName }
       })
 
       setRoomData(response)
 
-      // Store room data in localStorage for the session
       localStorage.setItem(
         "currentRoom",
         JSON.stringify({
-          roomCode: response.roomCode,
-          roomId: response.rtdbKey,
+          roomCode: response.roomInfo.roomCode,
+          roomId: response.roomInfo.rtdbKey,
           playerId: response.userData.uniqueId,
           playerName: response.userData.name,
           playerType: response.userData.userType
         }),
       )
 
-      // Redirect to room after successful join
       setTimeout(() => {
-        sessionStorage.removeItem("cachedRoomCode");
-        router.push(`/room/${response.roomCode}`)
+        sessionStorage.removeItem("cachedRoomCode")
+        router.push(`/room/${response.roomInfo.roomCode}`)
       }, 1500)
     } catch (err) {
       setError(getErrorMessage(err))
@@ -73,83 +88,51 @@ export default function JoinRoom() {
   }
 
   const handleDirectJoin = () => {
-    if (roomData?.roomCode) {
-      router.push(`/room/${roomData.roomCode}`)
+    if (roomData?.roomInfo.roomCode) {
+      router.push(`/room/${roomData.roomInfo.roomCode}`)
     }
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Neon Tech Background */}
+    <div className="relative min-h-screen flex flex-col overflow-hidden">
+      {/* Background layers */}
+      <div className="fixed inset-0 -z-20 bg-background" />
       <div className="fixed inset-0 -z-10">
-        {/* Base gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950/30 to-slate-950"></div>
-
-        {/* Tech grid overlay */}
-        <div className="tech-grid"></div>
-
-        {/* Neon elements */}
-        <div className="absolute inset-0">
-          {/* Circuit lines */}
-          <div className="circuit-lines">
-            <div className="circuit-line circuit-line-1"></div>
-            <div className="circuit-line circuit-line-2"></div>
-            <div className="circuit-line circuit-line-3"></div>
-          </div>
-
-          {/* Hexagonal elements */}
-          <div className="hex-container">
-            <div className="hex-element hex-1"></div>
-            <div className="hex-element hex-2"></div>
-            <div className="hex-element hex-3"></div>
-          </div>
-
-          {/* Neon orbs */}
-          <div className="neon-orb neon-orb-1"></div>
-          <div className="neon-orb neon-orb-2"></div>
-
-          {/* Data nodes */}
-          <div className="data-nodes">
-            <div className="data-node node-1"></div>
-            <div className="data-node node-2"></div>
-            <div className="data-node node-3"></div>
-            <div className="data-node node-4"></div>
-          </div>
-
-          {/* Connection lines */}
-          <div className="connection-lines">
-            <div className="connection-line conn-1"></div>
-            <div className="connection-line conn-2"></div>
-            <div className="connection-line conn-3"></div>
-          </div>
-
-          {/* Scanning line */}
-          <div className="scan-line"></div>
-        </div>
+        <div className="tech-grid" />
       </div>
+      <ParticleField />
 
-      <header className="border-b border-accent py-4">
-        <div className="container mx-auto px-4 flex items-center">
-          <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+      {/* Header */}
+      <header className="relative z-20 border-b border-accent/50 bg-background/80 backdrop-blur-lg">
+        <div className="container mx-auto flex items-center px-4 py-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
             Back to home
           </Link>
-          <h1 className="text-2xl font-bold mx-auto text-primary">PlanIt</h1>
+          <h1 className="mx-auto text-2xl font-bold text-neon">PlannIt</h1>
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-accent/50 border-accent">
+      {/* Main */}
+      <main className="relative z-10 flex flex-1 items-center justify-center p-4">
+        <Card className="w-full max-w-md border-accent/50 bg-card/40 backdrop-blur-md">
           <CardHeader>
-            <CardTitle>{roomData ? "Successfully Joined!" : "Join a Room"}</CardTitle>
-            <CardDescription>
-              {roomData ? `Welcome to ${roomData.roomCode}` : "Enter the room code shared by your team moderator"}
+            <CardTitle className="text-foreground">
+              {roomData ? "Successfully Joined!" : "Join a Room"}
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              {roomData
+                ? `Welcome to ${roomData.roomInfo.roomCode}`
+                : "Enter the room code shared by your team moderator"}
             </CardDescription>
           </CardHeader>
 
           <CardContent>
             {error && (
-              <Alert className="mb-4 border-red-500 bg-red-500/10">
+              <Alert className="mb-4 border-red-500/50 bg-red-500/10">
                 <AlertDescription className="text-red-400">{error}</AlertDescription>
               </Alert>
             )}
@@ -157,41 +140,20 @@ export default function JoinRoom() {
             {roomData ? (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Room Details</Label>
-                  <div className="p-4 bg-background rounded-md space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Room Code:</span>
-                      <span className="font-mono text-primary">{roomData.roomCode}</span>
+                  <Label className="text-sm font-medium text-muted-foreground">Room Details</Label>
+                  <div className="space-y-3 rounded-lg border border-accent/50 bg-background/60 p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Room Code:</span>
+                      <span className="font-mono text-neon">{roomData.roomInfo.roomCode}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Your Name:</span>
-                      <span className="font-medium">{roomData.userData.name}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Your Name:</span>
+                      <span className="text-sm font-medium text-foreground">{roomData.userData.name}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* {roomData.players && roomData.players.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium flex items-center">
-                      <Users className="mr-2 h-4 w-4" />
-                      Players in Room ({roomData.players.length})
-                    </Label>
-                    <div className="p-3 bg-background rounded-md">
-                      <div className="space-y-1">
-                        {roomData.players.map((player) => (
-                          <div key={player.id} className="flex justify-between items-center">
-                            <span className="text-sm">{player.name}</span>
-                            {player.isCreator && (
-                              <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">Creator</span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )} */}
-
-                <Alert className="border-green-500 bg-green-500/10">
+                <Alert className="border-green-500/50 bg-green-500/10">
                   <AlertDescription className="text-green-400">
                     You will be redirected to the room automatically...
                   </AlertDescription>
@@ -200,13 +162,13 @@ export default function JoinRoom() {
             ) : (
               <form onSubmit={handleJoinRoom} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="room-code">Room Code</Label>
+                  <Label htmlFor="room-code" className="text-muted-foreground">Room Code</Label>
                   <Input
                     id="room-code"
                     placeholder="Enter room code"
                     value={roomCode}
                     onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                    className="font-mono uppercase"
+                    className="font-mono uppercase border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-neon/30"
                     maxLength={8}
                     disabled={isLoading}
                     required
@@ -214,7 +176,7 @@ export default function JoinRoom() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="your-name">Your Name</Label>
+                  <Label htmlFor="your-name" className="text-muted-foreground">Your Name</Label>
                   <Input
                     id="your-name"
                     placeholder="Your name"
@@ -222,6 +184,8 @@ export default function JoinRoom() {
                     onChange={(e) => setYourName(e.target.value)}
                     disabled={isLoading}
                     required
+                    maxLength={30}
+                    className="border-accent/50 bg-background/60 text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-neon/30"
                   />
                 </div>
               </form>
@@ -230,24 +194,31 @@ export default function JoinRoom() {
 
           <CardFooter>
             {roomData ? (
-              <Button className="w-full" onClick={handleDirectJoin}>
+              <button
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-neon px-6 py-3 text-sm font-medium text-background transition-all hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.2)]"
+                onClick={handleDirectJoin}
+              >
                 Go to Room Now
-              </Button>
+                <ArrowRight className="h-4 w-4" />
+              </button>
             ) : (
-              <Button
-                className="w-full"
+              <button
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-neon px-6 py-3 text-sm font-medium text-background transition-all hover:bg-neon-hover hover:shadow-lg hover:shadow-[rgb(var(--neon)_/_0.2)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 onClick={handleJoinRoom}
                 disabled={isLoading || !roomCode.trim() || !yourName.trim()}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Joining Room...
                   </>
                 ) : (
-                  "Join Room"
+                  <>
+                    <Users className="h-4 w-4" />
+                    Join Room
+                  </>
                 )}
-              </Button>
+              </button>
             )}
           </CardFooter>
         </Card>

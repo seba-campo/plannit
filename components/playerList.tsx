@@ -1,10 +1,11 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { calculateAverage } from "@/utils/calculateAverage"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
-interface Player {
+export interface Player {
   id: string
   name: string
   hasVoted: boolean
@@ -19,19 +20,11 @@ interface PlayerListProps {
   currentPlayer: string
   onPlayerChange: (id: string) => void
   revealed: boolean
+  scaleValues?: (string | number)[]
 }
 
-export default function PlayerList({ players, currentPlayer, onPlayerChange, revealed }: PlayerListProps) {
-  const calculateAverage = () => {
-    const numericVotes = players
-      .filter((p) => p.vote && p.vote !== "?" && p.vote !== '0' && p.isOnline && p.userType !== "spectator")
-      .map((p) => Number.parseInt(p.vote as string))
-      .filter((vote) => !isNaN(vote))
-
-    if (numericVotes.length === 0) return "-"
-    const sum = numericVotes.reduce((acc, val) => acc + val, 0)
-    return (sum / numericVotes.length).toFixed(1)
-  }
+export default function PlayerList({ players, currentPlayer, onPlayerChange, revealed, scaleValues = [] }: PlayerListProps) {
+  const average = calculateAverage(players, scaleValues);
 
   if (!players || players.length === 0) {
     return (
@@ -91,7 +84,7 @@ export default function PlayerList({ players, currentPlayer, onPlayerChange, rev
           <div className="mt-6 pt-6 border-t border-accent">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Average:</span>
-              <span className="text-xl font-bold text-primary">{calculateAverage()}</span>
+              <span className="text-xl font-bold text-primary">{average}</span>
             </div>
           </div>
         )}
