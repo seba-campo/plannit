@@ -13,6 +13,7 @@ import CurrentItemBanner from "@/app/room/components/currentItemBanner/currentIt
 import PlayerList from "@/app/room/components/playerList/PlayerList"
 import ToggleUserType from "@/app/room/components/toggleUserType/ToggleUserType"
 import GameBoard from "@/app/room/components/gameBoard/GameBoard"
+import DesktopGameView from "@/app/room/components/desktopView/DesktopGameView"
 
 export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params)
@@ -109,39 +110,59 @@ export default function PlanningPokerRoom({ params }: { params: Promise<{ roomId
 
           {/* COLUMNA CENTRAL - Game Board */}
           <div className="w-full order-1 lg:order-2">
-            {/* User Type Toggle Button */}
-            {userRole !== "admin" && (
-              <ToggleUserType
-                isSpectator={isSpectator}
-                isCreator={isCreator}
-                handleUserTypeToggle={() => handleUserTypeToggle(setUserStatus)}
-                isUpdatingUserType={isUpdatingUserType}
-                isRevealed={revealed}
+
+            {/* ── DESKTOP VIEW (lg+) ── poker table + fan hand ── */}
+            <div className="hidden lg:block">
+              <DesktopGameView
+                roomSession={roomSession}
+                revealed={revealed}
+                userRole={userRole}
+                userStatus={userStatus}
+                currentPlayerVote={getCurrentPlayerVote() ?? null}
+                average={average}
+                atLeastOnePlayerVoted={atLeastOnePlayerVoted}
+                setUserStatus={setUserStatus}
+                scaleValues={scaleValues}
+                players={players}
+                getActivePlayersCount={getActivePlayersCount}
+                getSpectatorsCount={getSpectatorsCount}
               />
-            )}
+            </div>
 
-            {/* Board de las cartas. */}
-            <GameBoard
-              roomSession={roomSession}
-              revealed={revealed}
-              userRole={userRole}
-              userStatus={userStatus}
-              currentPlayerVote={getCurrentPlayerVote() ?? null}
-              average={average}
-              atLeastOnePlayerVoted={atLeastOnePlayerVoted}
-              setUserStatus={setUserStatus}
-              scaleValues={scaleValues}
-            />
+            {/* ── MOBILE VIEW (below lg) ── layout original ── */}
+            <div className="lg:hidden">
+              {userRole !== "admin" && (
+                <ToggleUserType
+                  isSpectator={isSpectator}
+                  isCreator={isCreator}
+                  handleUserTypeToggle={() => handleUserTypeToggle(setUserStatus)}
+                  isUpdatingUserType={isUpdatingUserType}
+                  isRevealed={revealed}
+                />
+              )}
 
-            {/* Lista de jugadores */}
-            <PlayerList
-              getActivePlayersCount={getActivePlayersCount}
-              getSpectatorsCount={getSpectatorsCount}
-              revealed={revealed}
-              average={average}
-              players={players}
-              roomSession={roomSession}
-            />
+              <GameBoard
+                roomSession={roomSession}
+                revealed={revealed}
+                userRole={userRole}
+                userStatus={userStatus}
+                currentPlayerVote={getCurrentPlayerVote() ?? null}
+                average={average}
+                atLeastOnePlayerVoted={atLeastOnePlayerVoted}
+                setUserStatus={setUserStatus}
+                scaleValues={scaleValues}
+              />
+
+              <PlayerList
+                getActivePlayersCount={getActivePlayersCount}
+                getSpectatorsCount={getSpectatorsCount}
+                revealed={revealed}
+                average={average}
+                players={players}
+                roomSession={roomSession}
+              />
+            </div>
+
           </div>
 
           {/* COLUMNA DERECHA - What's Next */}

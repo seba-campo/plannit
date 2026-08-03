@@ -42,7 +42,7 @@ export default function JoinRoom() {
     if (!storage) return
 
     const session: CachedSession = JSON.parse(storage)
-    setRoomCode(session.roomCode)
+    setRoomCode(session?.roomCode)
   }, [])
 
   const handleJoinRoom = async (e: React.FormEvent) => {
@@ -68,17 +68,17 @@ export default function JoinRoom() {
       localStorage.setItem(
         "currentRoom",
         JSON.stringify({
-          roomCode: response.roomInfo.roomCode,
-          roomId: response.roomInfo.rtdbKey,
-          playerId: response.userData.uniqueId,
-          playerName: response.userData.name,
-          playerType: response.userData.userType
+          roomCode: response?.roomCode,
+          roomId: response?.rtdbKey,
+          playerId: response?.userData?.uniqueId,
+          playerName: response?.userData?.name,
+          playerType: response?.userData?.userType
         }),
       )
 
       setTimeout(() => {
         sessionStorage.removeItem("cachedRoomCode")
-        router.push(`/room/${response.roomInfo.roomCode}`)
+        router.push(`/room/${response?.roomCode}`)
       }, 1500)
     } catch (err) {
       setError(getErrorMessage(err))
@@ -88,8 +88,8 @@ export default function JoinRoom() {
   }
 
   const handleDirectJoin = () => {
-    if (roomData?.roomInfo.roomCode) {
-      router.push(`/room/${roomData.roomInfo.roomCode}`)
+    if (roomData?.roomCode) {
+      router.push(`/room/${roomData?.roomCode}`)
     }
   }
 
@@ -125,7 +125,7 @@ export default function JoinRoom() {
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               {roomData
-                ? `Welcome to ${roomData.roomInfo.roomCode}`
+                ? `Welcome to ${roomData?.roomCode}`
                 : "Enter the room code shared by your team moderator"}
             </CardDescription>
           </CardHeader>
@@ -144,11 +144,11 @@ export default function JoinRoom() {
                   <div className="space-y-3 rounded-lg border border-accent/50 bg-background/60 p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Room Code:</span>
-                      <span className="font-mono text-neon">{roomData.roomInfo.roomCode}</span>
+                      <span className="font-mono text-neon">{roomData?.roomCode}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Your Name:</span>
-                      <span className="text-sm font-medium text-foreground">{roomData.userData.name}</span>
+                      <span className="text-sm font-medium text-foreground">{roomData?.userData?.name}</span>
                     </div>
                   </div>
                 </div>
