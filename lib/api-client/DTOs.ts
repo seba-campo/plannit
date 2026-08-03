@@ -6,7 +6,7 @@ export interface GetRoomDetailsResponse {
         votingType: {
             title: string
             description: string
-            scaleValues: string[]
+            scaleValues: (string | number)[]
         }
         roomOwner: {
             vote: number
@@ -76,7 +76,7 @@ export interface JoinRoomResponse {
     votingType: {
         title: string;
         description: string;
-        scaleValues: string[];
+        scaleValues: (string | number)[];
     };
     userData: {
         uniqueId: string,

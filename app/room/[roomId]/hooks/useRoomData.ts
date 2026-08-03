@@ -9,7 +9,7 @@ export const useRoomData = (roomId: string, isSessionReady: boolean, roomCode?: 
     const [players, setPlayers] = useState<Player[]>([])
     const [roomData, setRoomData] = useState<FirebaseRoom | null>(null)
     const [dataError, setDataError] = useState<string | null>(null)
-    const [scaleValues, setScaleValues] = useState<string[]>([])
+    const [scaleValues, setScaleValues] = useState<(string | number)[]>([])
 
     const [revealed, setRevealed] = useState(false)
     const [gameState, setGameState] = useState<"waiting" | "voting" | "revealed">("waiting")
@@ -47,7 +47,7 @@ export const useRoomData = (roomId: string, isSessionReady: boolean, roomCode?: 
                     hasVoted: player.hasVoted || false,
                     isOnline: player.isOnline || false,
                     lastSeen: player.lastSeen || null,
-                    name: player.name,
+                    name: player.name || "-",
                     uniqueId: player.uniqueId,
                     userType: player.userType || "player",
                     currentStatus: player.currentStatus || "player"

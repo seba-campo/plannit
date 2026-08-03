@@ -16,6 +16,7 @@ const PlayerSeat = ({
   const isSpectator = player.currentStatus === "spectator"
   const isOffline = !player.isOnline
   const sm = size === "sm"
+  const displayName = player.name || "?"
 
   return (
     <div className={cn("flex flex-col items-center gap-1.5", sm ? "w-16 gap-1" : "w-20", isOffline && "opacity-40")}>
@@ -51,17 +52,17 @@ const PlayerSeat = ({
             ? "bg-neon/20 border-neon text-neon"
             : "bg-card border-neon/20 text-foreground"
         )}
-        title={player.name}
+        title={displayName}
       >
-        {player.name.charAt(0)}
+        {displayName.charAt(0)}
       </div>
 
       <div className="text-center leading-tight">
         <span
           className={cn("text-muted-foreground truncate block", sm ? "text-[10px] max-w-[58px]" : "text-xs max-w-[72px]")}
-          title={player.name}
+          title={displayName}
         >
-          {player.name}
+          {displayName}
         </span>
         {isMe && <span className="text-neon text-[10px]">you</span>}
         {player.userType === "admin" && !isMe && (
