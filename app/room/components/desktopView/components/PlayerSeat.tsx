@@ -6,19 +6,23 @@ const PlayerSeat = ({
   player,
   revealed,
   isMe,
+  size = "md",
 }: {
   player: IPlayer
   revealed: boolean
   isMe: boolean
+  size?: "md" | "sm"
 }) => {
   const isSpectator = player.currentStatus === "spectator"
   const isOffline = !player.isOnline
+  const sm = size === "sm"
 
   return (
-    <div className={cn("flex flex-col items-center gap-1.5 w-20", isOffline && "opacity-40")}>
+    <div className={cn("flex flex-col items-center gap-1.5", sm ? "w-16 gap-1" : "w-20", isOffline && "opacity-40")}>
       <div
         className={cn(
-          "w-10 h-14 rounded-lg border-2 flex items-center justify-center text-sm font-bold transition-all duration-500",
+          "rounded-lg border-2 flex items-center justify-center font-bold transition-all duration-500",
+          sm ? "w-8 h-11 text-xs" : "w-10 h-14 text-sm",
           isSpectator
             ? "border-dashed border-muted-foreground/30 bg-transparent text-muted-foreground/30"
             : revealed
@@ -29,29 +33,34 @@ const PlayerSeat = ({
         )}
       >
         {isSpectator ? (
-          <Eye className="h-4 w-4" />
+          <Eye className={sm ? "h-3 w-3" : "h-4 w-4"} />
         ) : revealed ? (
-          <span className="text-base">{player.vote === "0" ? "💤" : player.vote}</span>
+          <span className={sm ? "text-sm" : "text-base"}>{player.vote === "0" ? "💤" : player.vote}</span>
         ) : player.hasVoted ? (
-          <CheckCircle2 className="h-5 w-5" />
+          <CheckCircle2 className={sm ? "h-4 w-4" : "h-5 w-5"} />
         ) : (
-          <Coffee className="h-4 w-4" />
+          <Coffee className={sm ? "h-3 w-3" : "h-4 w-4"} />
         )}
       </div>
 
       <div
         className={cn(
-          "w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 uppercase",
+          "rounded-full flex items-center justify-center font-bold border-2 uppercase",
+          sm ? "w-7 h-7 text-xs" : "w-9 h-9 text-sm",
           isMe
             ? "bg-neon/20 border-neon text-neon"
             : "bg-card border-neon/20 text-foreground"
         )}
+        title={player.name}
       >
         {player.name.charAt(0)}
       </div>
 
       <div className="text-center leading-tight">
-        <span className="text-xs text-muted-foreground truncate block max-w-[72px]" title={player.name}>
+        <span
+          className={cn("text-muted-foreground truncate block", sm ? "text-[10px] max-w-[58px]" : "text-xs max-w-[72px]")}
+          title={player.name}
+        >
           {player.name}
         </span>
         {isMe && <span className="text-neon text-[10px]">you</span>}

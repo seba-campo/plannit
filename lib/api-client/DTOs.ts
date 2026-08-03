@@ -71,19 +71,22 @@ export interface JoinRoomRequest {
 
 export interface JoinRoomResponse {
     message: string;
-    roomInfo: {
-        roomCode: string;
-        rtdbKey: string;
-        votingType: {
-            title: string;
-            description: string;
-            scaleValues: string[];
-        };
+    roomCode: string;
+    rtdbKey: string;
+    votingType: {
+        title: string;
+        description: string;
+        scaleValues: string[];
     };
     userData: {
         uniqueId: string,
         name: string,
-        userType: string
+        userType: string,
+        vote: number,
+        hasvoted: boolean,
+        currentStatus: string,
+        lastSeend: number,
+        
     }
 }
 
