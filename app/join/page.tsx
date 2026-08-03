@@ -68,8 +68,8 @@ export default function JoinRoom() {
       localStorage.setItem(
         "currentRoom",
         JSON.stringify({
-          roomCode: response?.roomCode,
-          roomId: response?.rtdbKey,
+          roomCode: response?.roomInfo?.roomCode,
+          roomId: response?.roomInfo?.rtdbKey,
           playerId: response?.userData?.uniqueId,
           playerName: response?.userData?.name,
           playerType: response?.userData?.userType
@@ -78,7 +78,7 @@ export default function JoinRoom() {
 
       setTimeout(() => {
         sessionStorage.removeItem("cachedRoomCode")
-        router.push(`/room/${response?.roomCode}`)
+        router.push(`/room/${response?.roomInfo?.roomCode}`)
       }, 1500)
     } catch (err) {
       setError(getErrorMessage(err))
@@ -88,8 +88,8 @@ export default function JoinRoom() {
   }
 
   const handleDirectJoin = () => {
-    if (roomData?.roomCode) {
-      router.push(`/room/${roomData?.roomCode}`)
+    if (roomData?.roomInfo?.roomCode) {
+      router.push(`/room/${roomData?.roomInfo?.roomCode}`)
     }
   }
 
@@ -125,7 +125,7 @@ export default function JoinRoom() {
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               {roomData
-                ? `Welcome to ${roomData?.roomCode}`
+                ? `Welcome to ${roomData?.roomInfo?.roomCode}`
                 : "Enter the room code shared by your team moderator"}
             </CardDescription>
           </CardHeader>
@@ -144,7 +144,7 @@ export default function JoinRoom() {
                   <div className="space-y-3 rounded-lg border border-accent/50 bg-background/60 p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Room Code:</span>
-                      <span className="font-mono text-neon">{roomData?.roomCode}</span>
+                      <span className="font-mono text-neon">{roomData?.roomInfo?.roomCode}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Your Name:</span>
